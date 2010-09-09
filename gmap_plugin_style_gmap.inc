@@ -91,7 +91,6 @@ class gmap_plugin_style_gmap extends views_plugin_style {
     if ($this->options['datasource'] == 'fields') {
       $lat_fied_obj = $this->view->display_handler->get_handler('field', $this->options['latfield']);
       $lon_field_obj = $this->view->display_handler->get_handler('field', $this->options['lonfield']);
-
       $lat_field = $lat_fied_obj->field_alias;
       $lon_field = $lon_field_obj->field_alias;
     }
@@ -101,7 +100,6 @@ class gmap_plugin_style_gmap extends views_plugin_style {
       $tooltip_field_obj = $this->view->display_handler->get_handler('field', $this->options['tooltipfield']);
       $tooltip_field = $tooltip_field_obj->field_alias;
     }
-
 
     // Determine fieldname for marker field.
     if ($this->options['markers'] == 'field') {
@@ -271,6 +269,7 @@ class gmap_plugin_style_gmap extends views_plugin_style {
       '#process' => array('views_process_dependency'),
       '#dependency' => array('edit-style-options-datasource' => array('fields')),
     );
+
     $form['lonfield'] = array(
       '#title' => t('Longitude field'),
       '#description' => t('Format must be degrees decimal.'),
@@ -279,22 +278,6 @@ class gmap_plugin_style_gmap extends views_plugin_style {
       '#default_value' => $this->options['lonfield'],
       '#process' => array('views_process_dependency'),
       '#dependency' => array('edit-style-options-datasource' => array('fields')),
-    );
-
-    $form['center_on_nodearg'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Center on node argument'),
-      '#default_value' => $this->options['center_on_nodearg'],
-      '#description' => ($this->view->base_table == 'node') ? t('Note: The view must contain an argument whose value is a node ID.') : t('Note: The view must contain an argument whose value is a node ID.') . '<br />' . t("The view must contain 'Node: nid' as one of its fields because the view type is not 'Node'."),
-    );
-    $form['center_on_nodearg_arg'] = array(
-      '#title' => t('Argument'),
-      '#description' => empty($argument_options) ? t("The value of the selected argument must be a number that matches a node ID.  Use the 'Global: Null' argument if you don't want to also restrict results to that node ID.  You must have added arguments to the view to use this option.") : t("The selected argument must be a number that matches a node ID.  Use the 'Global: Null' argument if you don't want to also restrict results to that node ID."),
-      '#type' => 'select',
-      '#options' => $argument_options,
-      '#default_value' => $this->options['center_on_nodearg_arg'],
-      '#process' => array('views_process_dependency'),
-      '#dependency' => array('edit-style-options-center-on-nodearg' => array(TRUE)),
     );
 
     $form['markers'] = array(
@@ -330,6 +313,22 @@ class gmap_plugin_style_gmap extends views_plugin_style {
       '#type' => 'gmap_markerchooser',
       '#title' => t('Marker / fallback marker to use'),
       '#default_value' => $this->options['markertype'],
+    );
+
+    $form['center_on_nodearg'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Center on node argument'),
+      '#default_value' => $this->options['center_on_nodearg'],
+      '#description' => ($this->view->base_table == 'node') ? t('Note: The view must contain an argument whose value is a node ID.') : t('Note: The view must contain an argument whose value is a node ID.') . '<br />' . t("The view must contain 'Node: nid' as one of its fields because the view type is not 'Node'."),
+    );
+    $form['center_on_nodearg_arg'] = array(
+      '#title' => t('Argument'),
+      '#description' => empty($argument_options) ? t("The value of the selected argument must be a number that matches a node ID.  Use the 'Global: Null' argument if you don't want to also restrict results to that node ID.  You must have added arguments to the view to use this option.") : t("The selected argument must be a number that matches a node ID.  Use the 'Global: Null' argument if you don't want to also restrict results to that node ID."),
+      '#type' => 'select',
+      '#options' => $argument_options,
+      '#default_value' => $this->options['center_on_nodearg_arg'],
+      '#process' => array('views_process_dependency'),
+      '#dependency' => array('edit-style-options-center-on-nodearg' => array(TRUE)),
     );
 
     $form['highlight_nodearg'] = array(
