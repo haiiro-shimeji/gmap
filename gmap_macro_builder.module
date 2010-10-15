@@ -50,12 +50,18 @@ function gmap_macro_builder_menu() {
  *   Suggestions for better ways of doing this welcome!
  */
 function gmap_macro_builder_form(&$form_state, $settings = array(), $hide = array()) {
+  $path = drupal_get_path('module', 'gmap');
+
   $form['macroform'] = array(
     '#type' => 'fieldset',
     '#title' => t('Gmap macro creation'),
     '#theme' => 'gmap_macro',
   );
 
+  $form['macroform']['before'] = array(
+    '#type' => 'markup',
+    '#markup' => 'BEFORE',
+  );
   $form['macroform']['mapdiv'] = array(
     '#type' => 'gmap',
     '#map' => 'macro_map',
@@ -66,6 +72,10 @@ function gmap_macro_builder_form(&$form_state, $settings = array(), $hide = arra
         'dynmarkers' => TRUE,
       ),
     ), $settings),
+  );
+  $form['macroform']['after'] = array(
+    '#type' => 'markup',
+    '#markup' => 'AFTER',
   );
 
   $defaults = array_merge(gmap_defaults(), $settings);
@@ -149,10 +159,16 @@ function gmap_macro_builder_form(&$form_state, $settings = array(), $hide = arra
   gmap_widget_setup($form['macroform']['height'], 'height', 'macro_map');
 
   $form['macroform']['alignment'] = array(
-    '#type' => 'gmap_align',
-    '#map' => 'macro_map',
+    '#type' => 'select',
     '#title' => t('Alignment'),
+    '#options' => drupal_map_assoc(array('None', 'Right', 'Left', 'Center')),
+    '#attached' => array(
+      'js' => array(
+        "$path/js/align.js" => array('weight' => 2),
+      ),
+    ),
   );
+  gmap_widget_setup($form['macroform']['alignment'], 'align', 'macro_map');
 
   $form['macroform']['zoom'] = array(
     '#type' => 'select',

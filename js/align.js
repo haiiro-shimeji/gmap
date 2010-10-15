@@ -6,8 +6,8 @@
  * Applies CSS classes to a macro.
  */
 
-/*global $, Drupal */
-
+/*global jQuery, Drupal */
+(function ($) {
 Drupal.gmap.addHandler('align', function (elem) {
   var obj = this;
   // Respond to incoming alignment changes.
@@ -49,3 +49,4 @@ Drupal.gmap.addHandler('gmap', function (elem) {
     }
   });
 });
+})(jQuery);

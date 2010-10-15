@@ -29,15 +29,15 @@ function _gmap_get_icondata() {
   // This whole process gets cached.
 
   // Get the ini files.
-  $inifiles = file_scan_directory($markerdir, '.*\.ini$');
+  $inifiles = file_scan_directory($markerdir, '/.*\.ini$/');
   // Parse the ini files and store by path
   $inis = array();
   foreach ($inifiles as $file) {
-    $path = substr($file->filename, strlen($markerdir), -strlen($file->basename));
+    $path = substr($file->uri, strlen($markerdir), -strlen($file->filename));
     if (!isset($inis[$path])) {
       $inis[$path] = array();
     }
-    $inis[$path][] = parse_ini_file($file->filename, TRUE);
+    $inis[$path][] = parse_ini_file($file->uri, TRUE);
   }
   unset($inifiles);
 
@@ -222,11 +222,11 @@ function _gmap_get_marker_titles() {
   // This whole process gets cached.
 
   // Get the ini files.
-  $inifiles = file_scan_directory($markerdir, '.*\.ini$');
+  $inifiles = file_scan_directory($markerdir, '/.*\.ini$/');
   // Parse the ini files and store by path
   $inis = array();
   foreach ($inifiles as $file) {
-    $data = parse_ini_file($file->filename, TRUE);
+    $data = parse_ini_file($file->uri, TRUE);
     if (isset($data['defaults'])) {
       // Ignore defaults
       unset($data['defaults']);

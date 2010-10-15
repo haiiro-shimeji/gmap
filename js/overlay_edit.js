@@ -5,22 +5,21 @@
  * Gmap Overlay Editor
  */
 
-/*global $, Drupal, GEvent, GMarker, GPolygon, GPolyline */
-
+/*global jQuery, Drupal, GEvent, GMarker, GPolygon, GPolyline */
 Drupal.gmap.addHandler('overlayedit_linestyle', function (elem) {
   var obj = this;
   obj.vars.styles.overlayline = [];
   var f = function () {
-    var o = Number($(this).attr('id').match(/\d+$/));
+    var o = Number(jQuery(this).attr('id').match(/\d+$/));
     obj.vars.styles.overlayline[o] = this.value;
   };
-  $(elem).find('input.gmap_style').change(f).each(f);
+  jQuery(elem).find('input.gmap_style').change(f).each(f);
 });
 
 Drupal.gmap.addHandler('overlayedit_linestyle_apply', function (elem) {
   var obj = this;
   obj.vars.overlay_linestyle_apply = Boolean(elem.checked);
-  $(elem).change(function () {
+  jQuery(elem).change(function () {
     obj.vars.overlay_linestyle_apply = Boolean(this.checked);
   });
 });
@@ -29,16 +28,16 @@ Drupal.gmap.addHandler('overlayedit_polystyle', function (elem) {
   var obj = this;
   obj.vars.styles.overlaypoly = [];
   var f = function () {
-    var o = Number($(this).attr('id').match(/\d+$/));
+    var o = Number(jQuery(this).attr('id').match(/\d+$/));
     obj.vars.styles.overlaypoly[o] = this.value;
   };
-  $(elem).find('input.gmap_style').change(f).each(f);
+  jQuery(elem).find('input.gmap_style').change(f).each(f);
 });
 
 Drupal.gmap.addHandler('overlayedit_polystyle_apply', function (elem) {
   var obj = this;
   obj.vars.overlay_polystyle_apply = Boolean(elem.checked);
-  $(elem).change(function () {
+  jQuery(elem).change(function () {
     obj.vars.overlay_polystyle_apply = Boolean(this.checked);
   });
 });
@@ -46,7 +45,7 @@ Drupal.gmap.addHandler('overlayedit_polystyle_apply', function (elem) {
 Drupal.gmap.addHandler('overlayedit_fillstroke_default', function (elem) {
   var obj = this;
   obj.vars._usedefaultfillstroke = Boolean(elem.checked);
-  $(elem).change(function () {
+  jQuery(elem).change(function () {
     obj.vars._usedefaultfillstroke = Boolean(this.checked);
     alert(obj.vars._usedefaultfillstroke);
   });
@@ -55,7 +54,7 @@ Drupal.gmap.addHandler('overlayedit_fillstroke_default', function (elem) {
 Drupal.gmap.addHandler('overlayedit_mapclicktype', function (elem) {
   var obj = this;
   obj.vars.overlay_add_mode = elem.value;
-  $(elem).change(function () {
+  jQuery(elem).change(function () {
     obj.vars.overlay_add_mode = elem.value;
     if (obj.temp_point) {
       delete obj.temp_point;
@@ -65,7 +64,7 @@ Drupal.gmap.addHandler('overlayedit_mapclicktype', function (elem) {
 Drupal.gmap.addHandler('overlayedit_markerclicktype', function (elem) {
   var obj = this;
   obj.vars.overlay_del_mode = elem.value;
-  $(elem).change(function () {
+  jQuery(elem).change(function () {
     obj.vars.overlay_del_mode = elem.value;
   });
 });
@@ -74,7 +73,7 @@ Drupal.gmap.addHandler('gmap', function (elem) {
   var obj = this;
 
   // Add status bar
-  var status = $(elem).after('<div class="gmap-statusbar">Status</div>').next();
+  var status = jQuery(elem).after('<div class="gmap-statusbar">Status</div>').next();
   obj.statusdiv = status[0];
 
   obj.bind('buildmacro', function (add) {
@@ -115,7 +114,7 @@ Drupal.gmap.addHandler('gmap', function (elem) {
       var polylines = [];
       var circles = [];
       var markers = {};
-      $.each(obj._oe.features, function (i, n) {
+      jQuery.each(obj._oe.features, function (i, n) {
         if (n.type) {
           switch (n.type) {
             case 'polyline':
@@ -141,7 +140,7 @@ Drupal.gmap.addHandler('gmap', function (elem) {
           }
         }
       });
-      $.each(markers, function (i, n) {
+      jQuery.each(markers, function (i, n) {
         add.push('markers=' + i + '::' + n.join(' + '));
       });
     }
@@ -153,7 +152,7 @@ Drupal.gmap.map.prototype.statusdiv = undefined;
 Drupal.gmap.map.prototype.status = function (text) {
   var obj = this;
   if (obj.statusdiv) {
-    $(obj.statusdiv).html(text);
+    jQuery(obj.statusdiv).html(text);
   }
 };
 
@@ -173,7 +172,7 @@ Drupal.gmap.addHandler('overlayedit', function (elem) {
     // @@@
   });
 
-  $(elem).change(function () {
+  jQuery(elem).change(function () {
     obj.vars.overlay_next_icon = elem.value;
 //    obj.vars.overlay_edit_mode = elem.value;
 //    obj.change('overlay_edit_mode',binding);
@@ -227,7 +226,7 @@ Drupal.gmap.addHandler('overlayedit', function (elem) {
                     ctx.overlay = null;
                     var tmpcnt = 0;
                     // Renumber markers in set.
-                    $.each(obj._oe.features, function (i, n) {
+                    jQuery.each(obj._oe.features, function (i, n) {
                       if (n.type && n.type === 'point' && n.marker === m) {
                         var pt = n.overlay.getLatLng();
                         n.overlay.setImage(Drupal.gmap.getIcon(n.marker, tmpcnt).image);

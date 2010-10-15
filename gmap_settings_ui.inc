@@ -37,15 +37,6 @@ function gmap_admin_settings(&$form_state) {
   $form['initialization']['googlemap_api_key']['#title'] = t('Google Maps API Key');
   $form['initialization']['googlemap_api_key']['#description'] = t('Your personal Googlemaps API key.  You must get this for each separate website at <a href="http://code.google.com/apis/maps/signup.html">Google Map API website</a>.');
 
-  if (variable_get('file_downloads', FILE_DOWNLOADS_PUBLIC) != FILE_DOWNLOADS_PUBLIC) {
-    $form['initialization']['gmap_private_markerfile'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Path to gmap_markers.js'),
-      '#description' => t('You are using the <em>Private</em> download method. For markers to work properly. you must press the <em>Regenerate</em> button, manually copy js/gmap_markers.js from the files directory to a location accessible by the webserver, and enter the file path relative to the Drupal root (including the filename) in this field. Example: <em>sites/default/misc/gmap_markers.js</em>'),
-      '#default_value' => variable_get('gmap_private_markerfile', ''),
-    );
-  }
-
   $form['initialization']['rebuild'] = array(
     '#type' => 'fieldset',
     '#title' => t('Regenerate marker cache'),
