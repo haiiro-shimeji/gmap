@@ -60,7 +60,7 @@ function gmap_admin_settings(&$form_state) {
   $form['gmap_default']['map'] = array(
     '#type' => 'gmap',
     '#map' => 'settings_default_map',
-    '#settings' => array(
+    '#gmap_settings' => array(
       'behavior' => array(
         'nodrag' => FALSE,
         'nokeyboard' => FALSE,
@@ -73,7 +73,7 @@ function gmap_admin_settings(&$form_state) {
   $behaviors = gmap_module_invoke('behaviors', $m);
   foreach ($behaviors as $k => $v) {
     if (isset($v['previewable']) && $v['previewable']) {
-      $form['gmap_default']['map']['#settings']['behavior'][$k] = $defaults['behavior'][$k];
+      $form['gmap_default']['map']['#gmap_settings']['behavior'][$k] = $defaults['behavior'][$k];
     }
   }
 

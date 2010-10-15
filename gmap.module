@@ -400,7 +400,7 @@ function gmap_set_location($map, &$form, $fields) {
   $element = array(
     '#type' => 'gmap',
     '#map' => $map['id'],
-    '#settings' => $map,
+    '#gmap_settings' => $map,
   );
 
   $form[$fields['latitude']]['#map']=$id;
@@ -413,7 +413,7 @@ function gmap_set_location($map, &$form, $fields) {
     $form[$fields['address']]['#map'] = $id;
     gmap_widget_setup($form[$fields['address']], 'locpick_address');
   }
-  return theme('gmap', $element);
+  return drupal_render($element);
 }
 
 /**
@@ -436,10 +436,8 @@ function _gmap_prepare($intext) {
     }
     $map = array(
       '#type' => 'gmap',
-      '#settings' => gmap_parse_macro($matches[1][$i], $ver),
+      '#gmap_settings' => gmap_parse_macro($matches[1][$i], $ver),
     );
-//    $map = array('element' => array('#settings' => gmap_parse_macro($matches[1][$i], $ver)));
-//    $out[1][$i] = theme('gmap', array('element' => $map));
     $out[1][$i] = drupal_render($map);
     $i++;
   } // endwhile process macro
@@ -573,7 +571,7 @@ function gmap_element_info() {
   return array(
     'gmap' => array(
       '#input' => FALSE, // This isn't a *form* input!!
-      '#settings' => array_merge(gmap_defaults(), array(
+      '#gmap_settings' => array_merge(gmap_defaults(), array(
         'points' => array(),
         'pointsOverlays' => array(),
         'lines' => array(),
@@ -898,12 +896,8 @@ function gmap_map_cleanup(&$map) {
  * Gmap element theme hook
  */
 function theme_gmap($variables) {
-  if (isset($variables['element'])) {
-    $element = $variables['element'];
-  }
-  else {
-    $element = $variables;
-  }
+  $element = $variables['element'];
+
   // Usability: Prevent js errors on first visit to settings page, etc.
   // Of course it will still error if the *wrong* key is on file.
   if (gmap_get_key() == '') {
@@ -915,21 +909,14 @@ function theme_gmap($variables) {
 
   _gmap_doheader();
 
-  // Convert from raw map array if needed.
-  if (!isset($element['#settings'])) {
-    $element = array(
-      '#settings' => $element,
-    );
-  }
-
   $mapid = FALSE;
   if (isset($element['#map']) && $element['#map']) {
     // The default mapid is #map.
     $mapid = $element['#map'];
   }
-  if (isset($element['#settings']['id'])) {
+  if (isset($element['#gmap_settings']['id'])) {
     // Settings overrides it.
-    $mapid = $element['#settings']['id'];
+    $mapid = $element['#gmap_settings']['id'];
   }
   if (!$mapid) {
     // Hmm, no mapid. Generate one.
@@ -940,18 +927,18 @@ function theme_gmap($variables) {
 
   gmap_widget_setup($element, 'gmap', $mapid);
 
-  if (!$element['#settings']) {
-    $element['#settings'] = array();
+  if (!$element['#gmap_settings']) {
+    $element['#gmap_settings'] = array();
   }
 
-  // Push the mapid back into #settings.
-  $element['#settings']['id'] = $mapid;
+  // Push the mapid back into #gmap_settings.
+  $element['#gmap_settings']['id'] = $mapid;
 
   $mapdefaults = gmap_defaults();
-  $map = array_merge($mapdefaults, $element['#settings']);
+  $map = array_merge($mapdefaults, $element['#gmap_settings']);
   // Styles is a subarray.
-  if (isset($element['#settings']['styles'])) {
-    $map['styles'] = array_merge($mapdefaults['styles'], $element['#settings']['styles']);
+  if (isset($element['#gmap_settings']['styles'])) {
+    $map['styles'] = array_merge($mapdefaults['styles'], $element['#gmap_settings']['styles']);
   }
   gmap_map_cleanup($map);
 
@@ -1024,8 +1011,8 @@ function gmap_widget_setup(&$element, $type, $map=NULL) {
     }
     else {
       // Hmm, missing #map. Try to figure it out.
-      if (isset($element['#settings']['id'])) {
-        $map = $element['#settings']['id'];
+      if (isset($element['#gmap_settings']['id'])) {
+        $map = $element['#gmap_settings']['id'];
       }
     }
   }
@@ -1229,7 +1216,11 @@ function gmap_simple_map($latitude, $longitude, $markername = '', $info = '', $z
     $settings = array_merge($settings, $map);
   }
 
-  return theme('gmap', array('#settings' => $settings));
+  $element = array(
+    '#type' => 'gmap',
+    '#gmap_settings' => $settings,
+  );
+  return drupal_render($element);
 }
 
 /**
