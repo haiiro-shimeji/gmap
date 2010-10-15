@@ -518,7 +518,7 @@ function _gmap_filter_tips($filter, $format, $long = FALSE) {
  * Implementation of hook_menu().
  */
 function gmap_menu() {
-  $items['admin/settings/gmap'] = array(
+  $items['admin/config/services/gmap'] = array(
     'title' => 'GMap',
     'description' => 'Configure GMap settings',
     'page callback' => 'drupal_get_form',
