@@ -224,7 +224,11 @@ class gmap_plugin_style_gmap extends views_plugin_style {
         }
 
         $map['markers'] = $markers;
-        $output .= theme($this->theme_functions(), $this->view, $this->options, $map, $title);
+        $output .= theme($this->theme_functions(), array(
+          'view' => $this->view,
+          'options' => $this->options,
+          'rows' => $map,
+          'title' => $title));
       }
     }
 
