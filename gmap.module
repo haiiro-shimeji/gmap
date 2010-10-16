@@ -65,7 +65,6 @@ function gmap_theme() {
     'gmap_dimension' => array('render element' => 'element'),
 //    'gmap_address' => array('render element' => 'element'),
 //    'gmap_align' => array('render element' => 'element'),
-    'gmap_style' => array('render element' => 'element'),
     'gmap' => array('render element' => 'element'),
   );
 }
@@ -752,17 +751,6 @@ function process_gmap_style($element) {
   unset($element['#input']);
   $element += element_info('fieldset');
   return $element;
-}
-
-/**
- * Theme a gmap_style fieldset.
- * @ingroup themeable
- */
-function theme_gmap_style($element) {
-  // Fieldsets print #value at the end, so we need to empty it out.
-  // Otherwise, it puts "Array" at the end of the fieldset.
-  $element['#value'] = '';
-  return theme('fieldset', $element, $element['#children']);
 }
 
 /**
