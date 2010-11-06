@@ -21,8 +21,13 @@ function gmap_macro_builder_help($path, $arg) {
 /**
  * Implementation of hook_perm().
  */
-function gmap_macro_builder_perm() {
-  return array('create gmap macro');
+function gmap_macro_builder_permission() {
+  return array(
+    'create gmap macro' =>  array(
+      'title' => t('Create gmap macro'),
+      'description' => t('Allows user to create a gmap macro for insertion into content.'),
+    )
+  );
 }
 
 /**
@@ -58,10 +63,6 @@ function gmap_macro_builder_form(&$form_state, $settings = array(), $hide = arra
     '#theme' => 'gmap_macro',
   );
 
-  $form['macroform']['before'] = array(
-    '#type' => 'markup',
-    '#markup' => 'BEFORE',
-  );
   $form['macroform']['mapdiv'] = array(
     '#type' => 'gmap',
     '#map' => 'macro_map',
@@ -72,10 +73,6 @@ function gmap_macro_builder_form(&$form_state, $settings = array(), $hide = arra
         'dynmarkers' => TRUE,
       ),
     ), $settings),
-  );
-  $form['macroform']['after'] = array(
-    '#type' => 'markup',
-    '#markup' => 'AFTER',
   );
 
   $defaults = array_merge(gmap_defaults(), $settings);
