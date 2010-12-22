@@ -6,7 +6,7 @@
  * GMap settings form.
  */
 
-function gmap_admin_settings(&$form_state) {
+function gmap_admin_settings($form, &$form_state) {
   // Reset the icondata cache.
   gmap_get_icondata(TRUE);
 
