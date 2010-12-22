@@ -62,10 +62,10 @@ class gmap_plugin_style_gmap extends views_plugin_style {
     if ($this->options['markers'] == 'nodetype') {
       $this->view->query->add_field('node', 'type', 'gmap_node_type');
     }
-    else if ($this->options['markers'] == 'taxonomy') {
+    elseif ($this->options['markers'] == 'taxonomy') {
       $this->view->query->add_field('gmap_taxonomy_node', 'marker', 'gmap_node_marker');
     }
-    else if ($this->options['markers'] == 'userrole') {
+    elseif ($this->options['markers'] == 'userrole') {
       $this->view->query->add_field('users_roles', 'rid', 'gmap_role_marker');
     }
 
@@ -124,7 +124,7 @@ class gmap_plugin_style_gmap extends views_plugin_style {
     if ($this->options['markers'] == 'nodetype') {
       $markertypes = variable_get('gmap_node_markers', array());
     }
-    else if ($this->options['markers'] == 'userrole') {
+    elseif ($this->options['markers'] == 'userrole') {
       $markertypes = variable_get('gmap_role_markers', array(DRUPAL_AUTHENTICATED_RID => 'drupal'));
     }
 
@@ -137,10 +137,10 @@ class gmap_plugin_style_gmap extends views_plugin_style {
     foreach ($sets as $title => $records) {
       $markers = array();
       $offsets = array();
-      $center_lat = null;
-      $center_lon = null;
-      $center_nid = null;
-      $highlight_nid = null;
+      $center_lat = NULL;
+      $center_lon = NULL;
+      $center_nid = NULL;
+      $highlight_nid = NULL;
 
       // We search nid argument used to center map
       if ($this->options['center_on_nodearg'] && $nodehandler = $this->view->display_handler->get_handler('argument', $this->options['center_on_nodearg_arg'])) {
@@ -173,12 +173,12 @@ class gmap_plugin_style_gmap extends views_plugin_style {
               $markername = $markertypes[$row->gmap_node_type];
             }
           }
-          else if ($this->options['markers'] == 'taxonomy') {
+          elseif ($this->options['markers'] == 'taxonomy') {
             if (!empty($row->gmap_node_marker)) {
               $markername = $row->gmap_node_marker;
             }
           }
-          else if ($this->options['markers'] == 'userrole') {
+          elseif ($this->options['markers'] == 'userrole') {
             if (!empty($row->gmap_role_marker)) {
               $markername = $markertypes[DRUPAL_AUTHENTICATED_RID];
               if (isset($markertypes[$row->gmap_role_marker])) {
@@ -186,7 +186,7 @@ class gmap_plugin_style_gmap extends views_plugin_style {
               }
             }
           }
-          else if ($this->options['markers'] == 'field') {
+          elseif ($this->options['markers'] == 'field') {
             if (!empty($row->{$marker_field})) {
               $markername = $row->{$marker_field};
             }
@@ -221,7 +221,7 @@ class gmap_plugin_style_gmap extends views_plugin_style {
               $marker['text'] = $this->row_plugin->render($row);
             }
             // Marker mode: link.
-            else if ($defaults['markermode'] == 2) {
+            elseif ($defaults['markermode'] == 2) {
               $marker['link'] = url('node/' . $row_nid);
             }
           }

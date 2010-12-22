@@ -170,14 +170,6 @@ function gmap_location_update_5101() {
  */
 function gmap_location_update_5102() {
   $ret = array();
-  $result = db_query("SELECT rid, perm FROM {permission} ORDER BY rid");
-  while ($role = db_fetch_object($result)) {
-    $renamed_permission = preg_replace('/(?<=^|,\ )user\ locations(?=,|$)/', 'view user location details', $role->perm);
-    $renamed_permission = preg_replace('/(?<=^|,\ )show\ user\ map(?=,|$)/', 'view user map', $renamed_permission);
-    $renamed_permission = preg_replace('/(?<=^|,\ )show\ node\ map(?=,|$)/', 'view node map', $renamed_permission);
-    if ($renamed_permission != $role->perm) {
-      $ret[] = update_sql("UPDATE {permission} SET perm = '$renamed_permission' WHERE rid = $role->rid");
-    }
-  }
+  drupal_set_message(t('You are upgrading from an ancient GMap version. Please see <a href="!url">this issue</a>.', array('!url' => 'http://drupal.org/node/392130')));
   return $ret;
 }

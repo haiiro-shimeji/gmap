@@ -548,7 +548,7 @@ function gmap_regenerate_markers() {
     variable_set('gmap_marker_file', $file->fid);
   }
   else {
-    drupal_set_message('GMap is unable to save the marker bundle. Markers will not work!', 'error');
+    drupal_set_message(t('GMap is unable to save the marker bundle. Markers will not work!'), 'error');
   }
 
   // Also regenerate the cached marker titles array
