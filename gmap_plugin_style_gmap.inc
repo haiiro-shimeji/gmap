@@ -298,7 +298,7 @@ class gmap_plugin_style_gmap extends views_plugin_style {
       '#type' => 'select',
       '#options' => $field_options,
       '#default_value' => $this->options['latfield'],
-      '#process' => array('views_process_dependency'),
+      '#process' => array('ctools_dependent_process'),
       '#dependency' => array('edit-style-options-datasource' => array('fields')),
     );
 
@@ -308,7 +308,7 @@ class gmap_plugin_style_gmap extends views_plugin_style {
       '#type' => 'select',
       '#options' => $field_options,
       '#default_value' => $this->options['lonfield'],
-      '#process' => array('views_process_dependency'),
+      '#process' => array('ctools_dependent_process'),
       '#dependency' => array('edit-style-options-datasource' => array('fields')),
     );
 
@@ -332,7 +332,7 @@ class gmap_plugin_style_gmap extends views_plugin_style {
       '#description' => t('You can use a views field to set the <em>markername</em> property of the markers.'),
       '#options' => $field_options,
       '#default_value' => $this->options['markerfield'],
-      '#process' => array('views_process_dependency'),
+      '#process' => array('ctools_dependent_process'),
       '#dependency' => array('edit-style-options-markers' => array('field')),
     );
 
@@ -348,7 +348,7 @@ class gmap_plugin_style_gmap extends views_plugin_style {
       '#description' => t('You can use a views field to define the "tail" of the path called back.'),
       '#options' => $field_options,
       '#default_value' => $this->options['rmtfield'],
-      '#process' => array('views_process_dependency'),
+      '#process' => array('ctools_dependent_process'),
       '#dependency' => array('edit-style-options-enablermt' => array(TRUE)),
     );
     $form['rmtcallback'] = array(
@@ -356,7 +356,7 @@ class gmap_plugin_style_gmap extends views_plugin_style {
       '#title' => t('RMT callback path'),
       '#description' => t('Define the base path to the callback here. The value of the rmt field will be appended.'),
       '#default_value' => $this->options['rmtcallback'],
-      '#process' => array('views_process_dependency'),
+      '#process' => array('ctools_dependent_process'),
       '#dependency' => array('edit-style-options-enablermt' => array(TRUE)),
     );
 
@@ -383,7 +383,7 @@ class gmap_plugin_style_gmap extends views_plugin_style {
       '#type' => 'select',
       '#options' => $argument_options,
       '#default_value' => $this->options['center_on_nodearg_arg'],
-      '#process' => array('views_process_dependency'),
+      '#process' => array('ctools_dependent_process'),
       '#dependency' => array('edit-style-options-center-on-nodearg' => array(TRUE)),
     );
 
@@ -399,7 +399,7 @@ class gmap_plugin_style_gmap extends views_plugin_style {
       '#type' => 'select',
       '#options' => $argument_options,
       '#default_value' => $this->options['highlight_nodearg_arg'],
-      '#process' => array('views_process_dependency'),
+      '#process' => array('ctools_dependent_process'),
       '#dependency' => array('edit-style-options-highlight-nodearg' => array(TRUE)),
     );
     $form['highlight_nodearg_color'] = array(
@@ -409,7 +409,7 @@ class gmap_plugin_style_gmap extends views_plugin_style {
       '#size' => 7,
       '#maxlength' => 7,
       '#default_value' => $this->options['highlight_nodearg_color'],
-      '#process' => array('views_process_dependency'),
+      '#process' => array('ctools_dependent_process'),
       '#dependency' => array('edit-style-options-highlight-nodearg' => array(TRUE)),
     );
 
@@ -424,7 +424,7 @@ class gmap_plugin_style_gmap extends views_plugin_style {
       '#type' => 'select',
       '#options' => $field_options,
       '#default_value' => $this->options['tooltipfield'],
-      '#process' => array('views_process_dependency'),
+      '#process' => array('ctools_dependent_process'),
       '#dependency' => array('edit-style-options-tooltipenabled' => array(TRUE)),
     );
   }
