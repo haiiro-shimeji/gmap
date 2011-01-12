@@ -57,6 +57,7 @@ function gmap_defaults() {
  */
 function gmap_theme() {
   return array(
+    'gmap_views_ui_gmapextended' => array('render element' => 'form'),
     'views_view_gmap' => array('render element' => 'element'),
     'gmap_views_marker_label' => array('render element' => 'element'),
     'gmap_marker_popup' => array('arguments' => array('label')), // @@@ FIXME
@@ -1279,8 +1280,54 @@ function gmap_views_plugins() {
         'uses options' => TRUE,
         'type' => 'normal',
       ),
+      'gmapextended' => array(
+        'title' => t('Extended GMap'),
+        'help' => t('Displays a map of markers.'),
+        'handler' => 'gmap_plugin_style_gmapextended',
+        'theme' => 'gmap_views_view_gmapextended',
+        'uses row plugin' => TRUE,
+        'uses fields' => TRUE,
+        'uses options' => TRUE,
+        //'uses grouping' => TRUE,
+        'type' => 'normal',
+      ),
     ),
   );
+}
+
+function theme_gmap_views_ui_gmapextended($variables) {
+  $form = $variables['form'];
+
+  $output = drupal_render($form['description_markup']);
+
+  $header = array(
+    t('Field'),
+    t('Purpose'),
+    t('Separator'),
+/*    array(
+      'data' => t('Sortable'),
+      'align' => 'center',
+    ),
+    array(
+      'data' => t('Default sort'),
+      'align' => 'center',
+    ),*/
+  );
+  $rows = array();
+  foreach (element_children($form['field_purposes']) as $id) {
+    $row = array();
+    $row[] = drupal_render($form['info'][$id]['name']);
+    $row[] = drupal_render($form['field_purposes'][$id]);
+    $row[] = drupal_render($form['info'][$id]['separator']);
+    $rows[] = $row;
+  }
+
+  // Add the special 'None' row.
+//  $rows[] = array(t('None'), '', '', '', array('align' => 'center', 'data' => drupal_render($form['default'][-1])));
+
+  $output .= theme('table', array('header' => $header, 'rows' => $rows));
+  $output .= drupal_render_children($form);
+  return $output;
 }
 
 /**
