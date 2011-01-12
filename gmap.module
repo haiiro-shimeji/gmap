@@ -915,7 +915,7 @@ function theme_gmap($variables) {
 
   gmap_widget_setup($element, 'gmap', $mapid);
 
-  if (!$element['#gmap_settings']) {
+  if (!isset($element['#gmap_settings'])) {
     $element['#gmap_settings'] = array();
   }
 
