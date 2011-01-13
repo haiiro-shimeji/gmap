@@ -7,6 +7,7 @@
 
 /*global $, Drupal, GEvent, GLatLng, GMarker */
 
+(function ($) {
 Drupal.gmap.addHandler('gmap', function (elem) {
   var obj = this;
 
@@ -141,3 +142,4 @@ Drupal.gmap.addHandler('locpick_longitude', function (elem) {
     }
   });
 });
+})(jQuery);
