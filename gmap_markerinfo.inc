@@ -23,7 +23,7 @@ function _gmap_get_icondata() {
     'transparent',
   );
 
-  $markerdir = variable_get('gmap_markerfiles', drupal_get_path('module', 'gmap') .'/markers');
+  $markerdir = variable_get('gmap_markerfiles', drupal_get_path('module', 'gmap') . '/markers');
 
   // The following routines are designed to be easy to comprehend, not fast.
   // This whole process gets cached.
@@ -216,7 +216,7 @@ function _gmap_compress_array(&$arr) {
 }
 
 function _gmap_get_marker_titles() {
-  $markerdir = variable_get('gmap_markerfiles', drupal_get_path('module', 'gmap') .'/markers');
+  $markerdir = variable_get('gmap_markerfiles', drupal_get_path('module', 'gmap') . '/markers');
 
   // The following routines are designed to be easy to comprehend, not fast.
   // This whole process gets cached.

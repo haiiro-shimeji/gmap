@@ -188,7 +188,7 @@ function gmap_macro_builder_form($form, &$form_state, $settings = array(), $hide
         $form['macroform'][$field]['#type'] = 'hidden';
         $form['macroform'][$field]['#value'] = $form['macroform'][$field]['#default_value'];
       }
-      else if ($mode == 2) {
+      elseif ($mode == 2) {
         $form['macroform'][$field]['#prefix'] = '<div style="display: none;">';
         $form['macroform'][$field]['#suffix'] = '</div>';
       }

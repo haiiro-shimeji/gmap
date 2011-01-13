@@ -1,6 +1,11 @@
 <?php
 // $Id$
 
+/**
+ * @file
+ * Translation definitions for builtin data.
+ */
+
 function gmap_marker_labels_potx() {
   $marker_labels = array(
     0 => t('Small Red'),
