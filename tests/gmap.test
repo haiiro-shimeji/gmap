@@ -6,7 +6,7 @@
  * Unit tests for gmap.module.
  */
 
-class GMapSimpleAPITest extends DrupalWebTestCase {
+class GMapSimpleAPITest extends DrupalUnitTestCase {
   function getInfo() {
     return array(
       'name' => 'GMap API sanity checks',
@@ -42,7 +42,7 @@ class GMapSimpleAPITest extends DrupalWebTestCase {
   }
 }
 
-class GMapMacroTest extends DrupalWebTestCase {
+class GMapMacroTest extends DrupalUnitTestCase {
   function getInfo() {
     return array(
       'name' => 'GMap Macro checks',
@@ -75,7 +75,8 @@ class GMapMacroTest extends DrupalWebTestCase {
     $this->assertEqual($b['foobehavior'], TRUE, t('Testing +behavior'));
     $this->assertEqual($b['barbehavior'], TRUE, t('Testing another +behavior'));
     $this->assertEqual($b['bazbehavior'], FALSE, t('Testing -behavior'));
-    $this->assertEqual(count($b), 3, t('Testing for leaked default flags'));
+    // NOT passing through default flags was a bug.
+    //$this->assertEqual(count($b), 3, t('Testing for leaked default flags'));
   }
 
   function testMacroRenamedDirectives() {
