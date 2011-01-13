@@ -37,15 +37,14 @@ class gmap_plugin_style_gmapextended extends views_plugin_style {
     $options['enablermt'] = array('default' => FALSE);
     $options['rmtcallback'] = array('default' => '');
 
+    /*
     $options['center_on_nodearg'] = array('default' => 0);
     $options['center_on_nodearg_arg'] = array('default' => '');
 
     $options['highlight_nodearg'] = array('default' => 0);
     $options['highlight_nodearg_arg'] = array('default' => '');
     $options['highlight_nodearg_color'] = array('default' => '#FF0000');
-
-    $options['tooltipenabled'] = array('default' => 0);
-    $options['tooltipfield'] = array('default' => '');
+    */
 
     return $options;
   }
@@ -160,16 +159,7 @@ class gmap_plugin_style_gmapextended extends views_plugin_style {
       '#title' => 'Default values',
       '#description' => t('You can set the value to use for marker parameters not controlled by fields here.'),
     );
-    // @@@ a bit hacky...
-    /*
-    foreach ($purposes as $key => $title) {
-      $form['fallback_values'][$key] = array(
-        '#title' => $title,
-        '#type' => 'textarea', //@@@
-        '#default_value' => isset($this->options['fallback_values'][$key]) ? $this->options['fallback_values'][$key] : '',
-      );
-    }
-    */
+
     $default = $this->options['fallback_values'];
     $form['fallback_values']['text'] = array( // @@@ Make this #text_format compatible so people can do neat tricks.
       '#type' => 'textarea',
@@ -225,7 +215,7 @@ class gmap_plugin_style_gmapextended extends views_plugin_style {
     );
 
 
-//////////////////////////
+////////////////////////// Form stuff below this line needs attention.
 
     $form['macro'] = array(
       '#type' => 'textarea',
@@ -258,7 +248,7 @@ class gmap_plugin_style_gmapextended extends views_plugin_style {
       '#title' => t('Marker / fallback marker to use'),
       '#default_value' => $this->options['markertype'],
     );
-
+/*
     $form['center_on_nodearg'] = array(
       '#type' => 'checkbox',
       '#title' => t('Center on node argument'),
@@ -300,7 +290,7 @@ class gmap_plugin_style_gmapextended extends views_plugin_style {
 //      '#process' => array('views_process_dependency'),
       '#dependency' => array('edit-style-options-highlight-nodearg' => array(TRUE)),
     );
-
+*/
   }
 
   /**
