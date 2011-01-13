@@ -14,11 +14,11 @@
 function gmap_location_theme() {
   return array(
     'gmap_location_user_page' => array('arguments' => array('header', 'map', 'footer')),
-    'gmap_location_node_page' => array('arguments' => array('count', 'header', 'map', 'footer')),
+    'gmap_location_node_page' => array('variables' => array('count' => 0, 'header' => '', 'map' => '', 'footer' => '')),
     // @@@ Test this one thoroughly.
     'gmap_location_infowindow_node' => array(
       'pattern' => 'gmap_location_infowindow_node__',
-      'arguments' => array('node', 'opt'),
+      'variables' => array('node' => NULL, 'opt' => NULL),
     ),
     'gmap_location_infowindow_user' => array('arguments' => array('account')),
   );
@@ -358,12 +358,15 @@ function gmap_location_node_page($nid = NULL) {
       }
     }
   }
-
-  return theme('gmap_location_node_page',
-    $count,
-    $nodemap['header'],
-    theme('gmap', array('#settings' => $map)),
-    $nodemap['footer']
+  $element = array(
+    '#type' => 'gmap',
+    '#gmap_settings' => $map,
+  );
+  return theme('gmap_location_node_page', array(
+    'count' => $count,
+    'header' => $nodemap['header'],
+    'map' => drupal_render($element),
+    'footer' => $nodemap['footer'])
   );
 }
 
@@ -373,7 +376,7 @@ function gmap_location_node_page($nid = NULL) {
 function gmap_location_node_point($node, $opt) {
   $output = '';
   // @@@ Make sure $node->type is an ok thing to do here..
-  echo theme(array("gmap_location_infowindow_node__$node->type", 'gmap_location_infowindow_node'), $node, $opt);
+  echo theme(array("gmap_location_infowindow_node__$node->type", 'gmap_location_infowindow_node'), array('node' => $node, 'opt' => $opt));
   // exit();
   return;
 }
@@ -381,7 +384,12 @@ function gmap_location_node_point($node, $opt) {
 /**
  * Theme function for displaying the node page.
  */
-function theme_gmap_location_node_page($count, $header = '', $map = '', $footer = '') {
+function theme_gmap_location_node_page(&$vars) {
+  $count = $vars['count'];
+  $header = $vars['header'];
+  $map = $vars['map'];
+  $footer = $vars['footer'];
+
   $output = '';
   if ($header) {
     $output .= "<p>$header</p>";
@@ -787,15 +795,16 @@ function theme_gmap_location_infowindow_node__og($node, $opt) {
  * Theme a node info window.
  * @ingroup themable
  */
-function theme_gmap_location_infowindow_node($node) {
+function theme_gmap_location_infowindow_node(&$vars) {
+  $node = $vars['node'];
   // Allow a module (where the module name matches the node type name)
   // to define a custom display for the google map label.
   // For this to work with flexinode defined data types,
   // a module called 'flexinode_#.module' in your site's module
   // directory and add theme_hook_gmapnodelabel($node, $location) to it.
   // Be sure to enable your 'flexinode_#.module'.
-  return '<div class="gmapnodelabel gmapnodelabel-' . form_clean_id($node->type) .
-    '">' . strtr(node_view($node, TRUE, FALSE, FALSE), "'\n\r", '"  ') . '</div>'; // make sure it all goes on one line.
+  return '<div class="gmapnodelabel gmapnodelabel-' . drupal_clean_css_identifier($node->type) .
+    '">' . strtr(drupal_render(node_view($node, 'teaser')), "'\n\r", '"  ') . '</div>'; // make sure it all goes on one line.
 }
 
 /**
