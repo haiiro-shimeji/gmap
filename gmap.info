@@ -8,3 +8,4 @@ files[] = gmap.views.inc
 files[] = gmap-view-gmap.tpl.php
 files[] = gmap_plugin_style_gmap.inc
 files[] = gmap_plugin_style_gmapextended.inc
+files[] = tests/gmap.test
