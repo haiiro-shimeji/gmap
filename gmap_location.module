@@ -25,13 +25,22 @@ function gmap_location_theme() {
 }
 
 /**
- * Implementation of hook_perm().
+ * Implementation of hook_permission().
  */
-function gmap_location_perm() {
+function gmap_location_permission() {
   return array(
-    'view node map',
-    'view user map',
-    'view user location details',
+    'view node map' => array(
+      'title' => t('View node map'),
+      'description' => t('See the sitewide node map.'),
+    ),
+    'view user map' => array(
+      'title' => t('View user map'),
+      'description' => t('See the sitewide user map.'),
+    ),
+    'view user location details' => array(
+      'title' => t('View user location details'),
+      'description' => t('See the users associated with markers on the sitewide user map.'),
+    ),
   );
 }
 
@@ -138,7 +147,7 @@ function gmap_location_user_page() {
   // The u.name, l.latitude, and l.longitude in the GROUP BY are needed for
   // PostgreSQL.
 
-  foreach($result as $row) {
+  foreach ($result as $row) {
     // Determine marker type to show.
     $marker = $markertypes[DRUPAL_AUTHENTICATED_RID];
     if ($row->role && isset($markertypes[$row->role])) {
@@ -201,7 +210,7 @@ function gmap_location_user_page() {
  */
 function gmap_location_user_point() {
   $uid = arg(3);
-  if (is_numeric($uid) && $account = user_load(array('uid' => $uid))) {
+  if (is_numeric($uid) && $account = user_load($uid)) {
     echo theme('gmap_location_infowindow_user', $account);
     exit();
   }
@@ -250,7 +259,7 @@ function gmap_location_node_page($nid = NULL) {
 
   $query
     ->condition('n.status', 1)
-	->condition(db_or()->condition('l.latitude', 0, '!=')->condition('l.longitude', 0, '!='))
+    ->condition(db_or()->condition('l.latitude', 0, '!=')->condition('l.longitude', 0, '!='))
     ->fields('n', array('nid', 'type', 'title'))
     ->fields('l', array('latitude', 'longitude'));
   $query->innerjoin('location_instance', 'i', 'n.vid = i.vid');
@@ -259,18 +268,17 @@ function gmap_location_node_page($nid = NULL) {
   if (is_numeric($nid) && $nid > 0) {
     $query->condition('n.nid', $nid);
   }
-	
+
   if (module_exists('gmap_taxonomy')) {
     $query
       ->fields('m', array('marker'))
-	  ->leftjoin('gmap_taxonomy_node', 'm', 'n.vid = m.vid');
+      ->leftjoin('gmap_taxonomy_node', 'm', 'n.vid = m.vid');
   }
-	
   $query->addTag('node_access');
   $result = $query->execute();
 
   $count = 0;
-  foreach($result as $row) {
+  foreach ($result as $row) {
     $count++;
     $newmarker = array();
     if ($mode == 1) {
@@ -335,7 +343,7 @@ function gmap_location_node_page($nid = NULL) {
         ':nid' => $nid
       ));
 
-      foreach($result as $row) {
+      foreach ($result as $row) {
         $newmarker = array();
         $newmarker['rmt'] = $nid . '/' . $row->uid;
 
@@ -674,7 +682,7 @@ function gmap_location_block_view($nid) {
         $markername = isset($markertypes[$node->type]) ? $markertypes[$node->type] : 'drupal';
         if (module_exists('gmap_taxonomy')) {
           $t = db_query('SELECT marker FROM {gmap_taxonomy_node} WHERE vid = :vid', array(':vid' => $node->vid))
-		    ->fetchField();
+            ->fetchField();
           if (!empty($t)) {
             $markername = $t;
           }
@@ -715,7 +723,7 @@ function gmap_location_author_block_view($nid) {
   $node = node_load($nid);
   if (in_array($node->type, variable_get('gmap_location_author_block_types', array()))) {
     $markername = variable_get('gmap_location_author_block_marker', 'drupal');
-    $author = user_load(array('uid' => $node->uid));
+    $author = user_load($node->uid);
     $markers = array();
     $count = 0;
     foreach ($author->locations as $loc) {
@@ -755,7 +763,7 @@ function gmap_location_author_block_view($nid) {
  * @@@ Todo: Move to a tpl.
  */
 function theme_gmap_location_infowindow_node__image($node) {
-  $out = '<a href="' . url('node/' . $node->nid) .'">' . check_plain($node->title) . '</a> <br>';
+  $out = '<a href="' . url('node/' . $node->nid) . '">' . check_plain($node->title) . '</a> <br>';
   $out .= image_display($node, 'thumbnail');
   return $out;
 }
@@ -766,7 +774,7 @@ function theme_gmap_location_infowindow_node__image($node) {
  * Theme an Organic Groups node info window.
  */
 function theme_gmap_location_infowindow_node__og($node, $opt) {
-  if (is_numeric($opt) && $account = user_load(array('uid' => $opt))) {
+  if (is_numeric($opt) && $account = user_load($opt)) {
     $output = theme('user_picture', $account);
     $output .= theme('username', $account);
     echo $output;

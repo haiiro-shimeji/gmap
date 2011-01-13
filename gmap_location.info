@@ -3,5 +3,6 @@ name = GMap Location
 description = Display location.module information on Google Maps
 package = Location
 core = 7.x
+files[] = gmap_location.module
 dependencies[] = gmap
 dependencies[] = location
