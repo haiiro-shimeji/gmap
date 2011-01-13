@@ -12,12 +12,7 @@ function theme_gmap_views_view_gmapextended(&$vars) {
     if (empty($data['latitude']) || empty($data['longitude'])) {
       continue;
     }
-    $markers[] = array(
-      'text' => $vars['result'][$offset], // @@@
-      'latitude' => (float)$data['latitude'],
-      'longitude' => (float)$data['longitude'],
-      'markername' => $data['markername'],
-    );
+    $markers[] = $data;
   }
   $map = gmap_parse_macro($vars['options']['macro']);
   $map['markers'] = $markers;
@@ -66,12 +61,24 @@ function template_preprocess_gmap_views_view_gmapextended(&$vars) {
   }
   */
 
-  // @@@ When to enable this?
-  // Marker click text.
   foreach ($markers as $offset => $marker) {
-    if (!isset($marker['text']) && !empty($vars['result'][$offset])) {
-      // Copy prerendered marker text in.
-      $marker['text'] = $vars['result'][$offset];
+    switch ($options['clickmode']) {
+      case 'render':
+        $markers[$offset]['text'] = $vars['result'][$offset];
+        //fallthrough
+      case 'text':
+        unset ($markers[$offset]['link']);
+        unset ($markers[$offset]['rmt']);
+        break;
+
+      case 'rmt':
+        unset ($markers[$offset]['text']);
+        unset ($markers[$offset]['link']);
+        break;
+
+      case 'link':
+        unset ($markers[$offset]['text']);
+        unset ($markers[$offset]['rmt']);
     }
   }
 
