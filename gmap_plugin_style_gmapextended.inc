@@ -29,12 +29,13 @@ class gmap_plugin_style_gmapextended extends views_plugin_style {
       'default' => 'location',
     );
 
+    $options['clickmode'] = array('default' => 'render');
+
     $options['markers'] = array('default' => 'static');
     $options['markertype'] = array('default' => 'drupal');
 
-    $options['latfield'] = array('default' => '');
-    $options['lonfield'] = array('default' => '');
-    $options['markerfield'] = array('default' => '');
+    $options['enablermt'] = array('default' => FALSE);
+    $options['rmtcallback'] = array('default' => '');
 
     $options['center_on_nodearg'] = array('default' => 0);
     $options['center_on_nodearg_arg'] = array('default' => '');
@@ -53,11 +54,13 @@ class gmap_plugin_style_gmapextended extends views_plugin_style {
     return array(
       '' => t('Unused'),
       'text' => t('Marker bubble contents'),
-      'lat' => t('Marker latitude'),
-      'lon' => t('Marker longitude'),
+      'rmt' => t('RMT tail'), // @@@ Stupid title
+      'link' => t('URL to visit when clicking marker'),
+      'latitude' => t('Marker latitude'),
+      'longitude' => t('Marker longitude'),
       'dyn' => t('Address for dynamic geocoding'),
       'title' => t('Marker title (tooltip)'),
-      'marker' => t('Marker type'),
+      'markername' => t('Marker type'),
       'offset' => t('Marker offset'),
     );
   }
@@ -87,59 +90,6 @@ class gmap_plugin_style_gmapextended extends views_plugin_style {
   }
 
   /**
-   * Normalize a list of columns based upon the fields that are
-   * available. This compares the fields stored in the style handler
-   * to the list of fields actually in the view, removing fields that
-   * have been removed and adding new fields in their own column.
-   *
-   * - Each field must be in a column.
-   * - Each column must be based upon a field, and that field
-   *   is somewhere in the column.
-   * - Any fields not currently represented must be added.
-   * - Columns must be re-ordered to match the fields.
-   *
-   * @param $columns
-   *   An array of all fields; the key is the id of the field and the
-   *   value is the id of the column the field should be in.
-   * @param $fields
-   *   The fields to use for the columns. If not provided, they will
-   *   be requested from the current display. The running render should
-   *   send the fields through, as they may be different than what the
-   *   display has listed due to access control or other changes.
-   */
-  function sanitize_columns($columns, $fields = NULL) {
-    $sanitized = array();
-    if ($fields === NULL) {
-      $fields = $this->display->handler->get_option('fields');
-    }
-
-    // Preconfigure the sanitized array so that the order is retained.
-    foreach ($fields as $field => $info) {
-      // Set to itself so that if it isn't touched, it gets column
-      // status automatically.
-      $sanitized[$field] = $field;
-    }
-
-    foreach ($columns as $field => $column) {
-      // first, make sure the field still exists.
-      if (!isset($sanitized[$field])) {
-        continue;
-      }
-
-      // If the field is the column, mark it so, or the column
-      // it's set to is a column, that's ok
-      if ($field == $column || (isset($columns[$column]) && $columns[$column] == $column) && !empty($sanitized[$column])) {
-        $sanitized[$field] = $column;
-      }
-      // Since we set the field to itself initially, ignoring
-      // the condition is ok; the field will get its column
-      // status back.
-    }
-
-    return $sanitized;
-  }
-
-  /**
    * Render the given style.
    */
   function options_form(&$form, &$form_state) {
@@ -155,26 +105,22 @@ class gmap_plugin_style_gmapextended extends views_plugin_style {
     $form['#theme'] = 'gmap_views_ui_gmapextended';
 
     $purposes = $this->purpose_list();
-    $columns = $this->sanitize_columns($this->options['field_purposes']);
+
+    $fields = $this->display->handler->get_option('fields');
 
     // Create an array of allowed columns from the data we know:
     $field_names = $this->display->handler->get_field_labels();
-
-    foreach ($columns as $field => $column) {
-      $safe = str_replace(array('][', '_', ' '), '-', $field);
-      // the $id of the column for dependency checking.
-      $id = 'edit-style-options-columns-' . $safe;
-
+    foreach ($field_names as $field => $title) {
       $form['field_purposes'][$field] = array(
         '#type' => 'select',
-        '#options' => $purposes,//$field_names,
-        '#default_value' => $column,
+        '#options' => $purposes,
+        '#default_value' => isset($this->options['field_purposes'][$field]) ? $this->options['field_purposes'][$field] : '',
       );
+      // @@@ Remove?
       $form['info'][$field]['separator'] = array(
         '#type' => 'textfield',
         '#size' => 10,
         '#default_value' => isset($this->options['info'][$field]['separator']) ? $this->options['info'][$field]['separator'] : '',
-        '#dependency' => array($id => array($field)),
       );
 
       // markup for the field name
@@ -184,7 +130,28 @@ class gmap_plugin_style_gmapextended extends views_plugin_style {
     }
 
     $form['description_markup'] = array(
-      '#markup' => '<div class="description form-item">' . t('Place fields into columns; you may combine multiple fields into the same column. If you do, the separator in the column specified will be used to separate the fields. Check the sortable box to make that column click sortable, and check the default sort radio to determine which column will be sorted by default, if any. You may control column order and field labels in the fields section.') . '</div>',
+      '#markup' => '<div class="description form-item">' . t('Assign purposes to fields you are using to supply map data. NOTE: This style is under heavy development currently, no backwards compatibility is guaranteed!') . '</div>',
+    );
+
+    $form['clickmode'] = array(
+      '#type' => 'radios',
+      '#title' => t('Marker click action'),
+      '#options' => array(
+        'render' => t('Show formatted row in bubble'),
+        'text' => t('Show defined text in bubble'),
+        'rmt' => t('Fetch data from callback in bubble (RMT mode)'),
+        'link' => t('Go to URL'),
+      ),
+      '#default_value' => isset($this->options['clickmode']) ? $this->options['clickmode'] : 'render',
+    );
+    
+    $form['rmtcallback'] = array(
+      '#type' => 'textfield',
+      '#title' => t('RMT callback path'),
+      '#description' => t('Define the base path to the callback here. The value of the RMT tail will be appended.'),
+      '#default_value' => $this->options['rmtcallback'],
+      '#process' => array('ctools_dependent_process'),
+      '#dependency' => array('radio:style_options[clickmode]' => array('rmt')),
     );
 
     $form['fallback_values'] = array(
@@ -203,31 +170,58 @@ class gmap_plugin_style_gmapextended extends views_plugin_style {
       );
     }
     */
+    $default = $this->options['fallback_values'];
     $form['fallback_values']['text'] = array( // @@@ Make this #text_format compatible so people can do neat tricks.
       '#type' => 'textarea',
       '#title' => t('Marker bubble contents'),
-      '#default_value' => isset($this->options['fallback_values']['text']) ? $this->options['fallback_values']['text'] : '',
+      '#default_value' => isset($default['text']) ? $default['text'] : '',
+      '#process' => array('ctools_dependent_process'),
+      '#dependency' => array('radio:style_options[clickmode]' => array('text')),
+    );
+    $form['fallback_values']['rmt'] = array(
+      '#type' => 'textfield',
+      '#title'  => t('RMT tail'),
+      '#default_value' => isset($default['rmt']) ? $default['rmt'] : '',
+      '#process' => array('ctools_dependent_process'),
+      '#dependency' => array('radio:style_options[clickmode]' => array('rmt')),
+    );
+    $form['fallback_values']['link'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Marker click URL'),
+      '#default_value' => isset($default['link']) ? $default['link'] : '',
+      '#process' => array('ctools_dependent_process'),
+      '#dependency' => array('radio:style_options[clickmode]' => array('link')),
+    );
+    $form['fallback_values']['latitude'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Latitude'),
+      '#default_value' => isset($default['latitude']) ? $default['latitude'] : '',
+    );
+    $form['fallback_values']['longitude'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Longitude'),
+      '#default_value' => isset($default['longitude']) ? $default['longitude'] : '',
     );
     $form['fallback_values']['title'] = array(
       '#type' => 'textfield',
       '#title' => t('Marker title (tooltip)'),
       '#description' => t('Set a fallback value for the marker tooltip if you want to use a fixed tooltip instead of assigning a field, or leave blank.'),
-      '#default_value' => isset($this->options['fallback_values']['title']) ? $this->options['fallback_values']['title'] : '',
+      '#default_value' => isset($default['title']) ? $default['title'] : '',
     );
     $markernames = array('' => t('Use site default'));
     $markernames += gmap_get_marker_titles();
-    $form['fallback_values']['marker'] = array(
+    $form['fallback_values']['markername'] = array(
       '#type' => 'select',
       '#title' => t('Marker type'),
       '#options' => $markernames,
       '#description' => t('Set a fallback value for the marker type if you want to use a fixed type.'),
-      '#default_value' => isset($this->options['fallback_values']['marker']) ? $this->options['fallback_values']['marker'] : '',
+      '#default_value' => isset($default['markername']) ? $default['markername'] : '',
     );
     $form['fallback_values']['offset'] = array(
       '#type' => 'textfield',
       '#title' => t('Marker offset'),
       '#description' => t('Set a fallback value if you want to use a static offset. Leave blank if you want automatic assignment.'),
-      '#default_value' => isset($this->options['fallback_values']['offset']) ? $this->options['fallback_values']['offset'] : '',
+      '#default_value' => isset($default['offset']) ? $default['offset'] : '',
     );
 
 

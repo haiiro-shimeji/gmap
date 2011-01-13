@@ -9,13 +9,13 @@
 function theme_gmap_views_view_gmapextended(&$vars) {
   $markers = array();
   foreach ($vars['markers'] as $offset => $data) {
-    if (empty($data['lat']) || empty($data['lon'])) {
+    if (empty($data['latitude']) || empty($data['longitude'])) {
       continue;
     }
     $markers[] = array(
       'text' => $vars['result'][$offset], // @@@
-      'latitude' => (float)$data['lat'],
-      'longitude' => (float)$data['lon'],
+      'latitude' => (float)$data['latitude'],
+      'longitude' => (float)$data['longitude'],
       'markername' => $data['markername'],
     );
   }
@@ -43,13 +43,19 @@ function template_preprocess_gmap_views_view_gmapextended(&$vars) {
   $handler  = $view->style_plugin;
 
   $fields   = &$view->field;
-  $columns  = $handler->sanitize_columns($options['field_purposes'], $fields);
 
   // Render fields.
   $renders = $handler->render_fields($result);
 
   $markers = array();
   // File away fields into the marker data.
+  foreach ($renders as $i => $row) {
+    $markers[$i] = $options['fallback_values'];
+    foreach ($options['field_purposes'] as $field => $purpose) {
+      $markers[$i][$purpose] .= $row[$field];
+    }
+  }
+  /*
   foreach ($options['field_purposes'] as $field => $purpose) {
     foreach ($renders as $i => $row) {
       if (!isset($markers[$i][$purpose])) {
@@ -58,7 +64,8 @@ function template_preprocess_gmap_views_view_gmapextended(&$vars) {
       $markers[$i][$purpose] .= $row[$field];
     }
   }
-  
+  */
+
   // @@@ When to enable this?
   // Marker click text.
   foreach ($markers as $offset => $marker) {
@@ -69,11 +76,13 @@ function template_preprocess_gmap_views_view_gmapextended(&$vars) {
   }
 
   // @@@ add rest of handling
+  /*
   if ($options['markers'] == 'static') {
     foreach ($markers as $offset => $marker) {
       $markers[$offset]['markername'] = $options['markertype'];
     }
   }
+  */
 
   // Marker cleanup
   foreach ($markers as $offset => $marker) {
