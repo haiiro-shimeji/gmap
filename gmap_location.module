@@ -13,14 +13,14 @@
  */
 function gmap_location_theme() {
   return array(
-    'gmap_location_user_page' => array('arguments' => array('header', 'map', 'footer')),
+    'gmap_location_user_page' => array('variables' => array('header' => '', 'map' => '', 'footer' => '')),
     'gmap_location_node_page' => array('variables' => array('count' => 0, 'header' => '', 'map' => '', 'footer' => '')),
     // @@@ Test this one thoroughly.
     'gmap_location_infowindow_node' => array(
       'pattern' => 'gmap_location_infowindow_node__',
       'variables' => array('node' => NULL, 'opt' => NULL),
     ),
-    'gmap_location_infowindow_user' => array('arguments' => array('account')),
+    'gmap_location_infowindow_user' => array('variables' => array('account' => NULL)),
   );
 }
 
@@ -197,11 +197,15 @@ function gmap_location_user_page() {
     }
   }
 */
+  $element = array(
+    '#type' => 'gmap',
+    '#gmap_settings' => $map,
+  );
 
-  return theme('gmap_location_user_page',
-    $usermap['header'],
-    theme('gmap', array('#settings' => $map)),
-    $usermap['footer']
+  return theme('gmap_location_user_page', array(
+    'header' => $usermap['header'],
+    'map' => drupal_render($element),
+    'footer' => $usermap['footer'])
   );
 }
 
@@ -211,7 +215,7 @@ function gmap_location_user_page() {
 function gmap_location_user_point() {
   $uid = arg(3);
   if (is_numeric($uid) && $account = user_load($uid)) {
-    echo theme('gmap_location_infowindow_user', $account);
+    echo theme('gmap_location_infowindow_user', array('account' => $account));
     exit();
   }
 }
@@ -219,7 +223,11 @@ function gmap_location_user_point() {
 /**
  * Theme function for displaying the user page.
  */
-function theme_gmap_location_user_page($header = '', $map = '', $footer = '') {
+function theme_gmap_location_user_page(&$vars) {
+  $header = $vars['header'];
+  $map = $vars['map'];
+  $footer = $vars['footer'];
+
   global $user;
 
   $output = "<p>$header</p>\n<p>$map</p>\n<p>$footer</p>";
@@ -720,7 +728,11 @@ function gmap_location_block_view($nid) {
       $map['longitude'] = $markers[0]['longitude'];
       $map['markers'] = $markers;
       $block['subject'] = t('Location');
-      $block['content'] = theme('gmap', array('#settings' => $map)); // @@@ Better theme
+      $element = array(
+        '#type' => 'gmap',
+        '#gmap_settings' => $map,
+      );
+      $block['content'] = drupal_render($element); // @@@ Better theme
     }
   }
   return $block;
@@ -760,7 +772,11 @@ function gmap_location_author_block_view($nid) {
       $map['longitude'] = $markers[0]['longitude'];
       $map['markers'] = $markers;
       $block['subject'] = t('Author Location');
-      $block['content'] = theme('gmap', array('#settings' => $map)); // @@@ Better theme
+      $element = array(
+        '#type' => 'gmap',
+        '#gmap_settings' => $map,
+      );
+      $block['content'] = drupal_render($element); // @@@ Better theme
     }
   }
   return $block;
@@ -770,7 +786,8 @@ function gmap_location_author_block_view($nid) {
  * Default theme for image nodes.
  * @@@ Todo: Move to a tpl.
  */
-function theme_gmap_location_infowindow_node__image($node) {
+function theme_gmap_location_infowindow_node__image(&$vars) {
+  $node = $vars['node'];
   $out = '<a href="' . url('node/' . $node->nid) . '">' . check_plain($node->title) . '</a> <br>';
   $out .= image_display($node, 'thumbnail');
   return $out;
@@ -778,13 +795,16 @@ function theme_gmap_location_infowindow_node__image($node) {
 
 // @@@ This is not thoroughly tested for 5.x yet!
 // @@@ Or 6.x for that matter!
+// @@@ 7.x is right out!
 /**
  * Theme an Organic Groups node info window.
  */
-function theme_gmap_location_infowindow_node__og($node, $opt) {
+function theme_gmap_location_infowindow_node__og(&$vars) {
+  $node = $vars['node'];
+  $opt = $vars['opt'];
   if (is_numeric($opt) && $account = user_load($opt)) {
-    $output = theme('user_picture', $account);
-    $output .= theme('username', $account);
+    $output = theme('user_picture', array('account' => $account));
+    $output .= theme('username', array('account' => $account));
     echo $output;
     exit();
   }
@@ -810,9 +830,10 @@ function theme_gmap_location_infowindow_node(&$vars) {
 /**
  * Default theme for user infowindows.
  */
-function theme_gmap_location_infowindow_user($account) {
-  $returntxt = theme('user_picture', $account);
-  $returntxt .= theme('username', $account);
+function theme_gmap_location_infowindow_user(&$vars) {
+  $account = $vars['account'];
+  $returntxt = theme('user_picture', array('account' => $account));
+  $returntxt .= theme('username', array('account' => $account));
   return $returntxt;
 }
 
