@@ -5,7 +5,7 @@
  * Common marker routines.
  */
 
-/*global $, Drupal, GEvent, GInfoWindowTab, GLatLng, GLatLngBounds */
+/*global jQuery, Drupal, GEvent, GInfoWindowTab, GLatLng, GLatLngBounds */
 
 Drupal.gmap.addHandler('gmap', function (elem) {
   var obj = this;
@@ -78,7 +78,7 @@ Drupal.gmap.addHandler('gmap', function (elem) {
       //if (!marker.text && Drupal.settings.loadingImage) {
       //  marker.marker.openInfoWindowHtml(Drupal.settings.loadingImage);
       //}
-      $.get(uri, {}, function (data) {
+      jQuery.get(uri, {}, function (data) {
         marker.marker.openInfoWindowHtml(data);
       });
     }
