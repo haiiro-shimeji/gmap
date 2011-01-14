@@ -280,7 +280,7 @@ function gmap_location_node_page($nid = NULL) {
   if (module_exists('gmap_taxonomy')) {
     $query
       ->fields('m', array('marker'))
-      ->leftjoin('gmap_taxonomy_node', 'm', 'n.vid = m.vid');
+      ->leftjoin('gmap_taxonomy_node', 'm', 'n.nid = m.nid');
   }
   $query->addTag('node_access');
   $result = $query->execute();
@@ -705,7 +705,7 @@ function _gmap_location_block_view($nid) {
         $count++;
         $markername = isset($markertypes[$node->type]) ? $markertypes[$node->type] : 'drupal';
         if (module_exists('gmap_taxonomy')) {
-          $t = db_query('SELECT marker FROM {gmap_taxonomy_node} WHERE vid = :vid', array(':vid' => $node->vid))
+          $t = db_query('SELECT marker FROM {gmap_taxonomy_node} WHERE nid = :nid', array(':nid' => $node->nid))
             ->fetchField();
           if (!empty($t)) {
             $markername = $t;
