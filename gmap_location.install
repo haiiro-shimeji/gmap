@@ -128,7 +128,7 @@ function gmap_location_update_5100() {
         break;
       default:
         // User has customized macro.
-        drupal_set_message(t('You have customized the !type macro. Be advised that the new default macro is %macro. Please check your macro on the <a href="@url">block configuration page</a>.', array('!type' => t('Location block'), '%macro' => '[gmap |width=100% |height=200px |control=None |behavior=+autozoom +notype]', '@url' => url('admin/build/block/configure/gmap_location/0'))));
+        drupal_set_message(t('You have customized the @type macro. Be advised that the new default macro is %macro. Please check your macro on the <a href="@url">block configuration page</a>.', array('@type' => t('Location block'), '%macro' => '[gmap |width=100% |height=200px |control=None |behavior=+autozoom +notype]', '@url' => url('admin/structure/block/manage/gmap_location/0/configure'))));
     }
   }
 
@@ -147,7 +147,7 @@ function gmap_location_update_5100() {
         break;
       default:
         // User has customized macro.
-        drupal_set_message(t('You have customized the !type macro. Be advised that the new default macro is %macro. Please check your macro on the <a href="@url">block configuration page</a>.', array('!type' => t('Author block'), '%macro' => '[gmap |width=100% |height=200px |control=None |behavior=+autozoom +notype]', '@url' => url('admin/build/block/configure/gmap_location/1'))));
+        drupal_set_message(t('You have customized the @type macro. Be advised that the new default macro is %macro. Please check your macro on the <a href="@url">block configuration page</a>.', array('@type' => t('Author block'), '%macro' => '[gmap |width=100% |height=200px |control=None |behavior=+autozoom +notype]', '@url' => url('admin/structure/block/manage/gmap_location/1/configure'))));
     }
   }
 
@@ -170,6 +170,6 @@ function gmap_location_update_5101() {
  */
 function gmap_location_update_5102() {
   $ret = array();
-  drupal_set_message(t('You are upgrading from an ancient GMap version. Please see <a href="!url">this issue</a>.', array('!url' => 'http://drupal.org/node/392130')));
+  drupal_set_message(t('You are upgrading from an ancient GMap version. Please see <a href="@url">this issue</a>.', array('@url' => 'http://drupal.org/node/392130')));
   return $ret;
 }
