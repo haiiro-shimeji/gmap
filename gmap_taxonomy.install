@@ -7,20 +7,6 @@
  */
 
 /**
- * Implementation of hook_install().
- */
-function gmap_taxonomy_install() {
-  drupal_install_schema('gmap_taxonomy');
-}
-
-/**
- * Implementation of hook_uninstall().
- */
-function gmap_taxonomy_uninstall() {
-  drupal_uninstall_schema('gmap_taxonomy');
-}
-
-/**
  * Implementation of hook_schema().
  */
 function gmap_taxonomy_schema() {
