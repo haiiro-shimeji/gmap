@@ -555,136 +555,144 @@ function gmap_location_admin_settings() {
 }
 
 /**
- * Draw block of location for current node.
+ * Implement hook_block_info().
  */
-function gmap_location_block($op = 'list', $delta = 0, $edit = array()) {
-  switch ($op) {
-    case 'list':
-      $blocks[0] = array(
-        'info' => t('Location map'),
-        'cache' => BLOCK_NO_CACHE, // As it injects JS.
-      );
-      $blocks[1] = array(
-        'info' => t('Author map'),
-        'cache' => BLOCK_NO_CACHE, // As it injects JS.
-      );
-      return $blocks;
+function gmap_location_block_info() {
+  return array(
+    0 => array(
+      'info' => t('Location map'),
+      'cache' => DRUPAL_NO_CACHE, // @@@ Check whether we can fix this by telling drupal what js to use.
+    ),
+    1 => array(
+      'info' => t('Author map'),
+      'cache' => DRUPAL_NO_CACHE, // @@@
+    ),
+  );
+}
 
-    case 'configure':
-      $form = array();
-      if ($delta == 0) { // Location map
-        $form['gmap_location_block_macro'] = array(
+/**
+ * Implement hook_block_configure().
+ */
+function gmap_location_block_configure($delta = '') {
+  if ($delta == 0) { // Location map
+    $form['gmap_location_block_macro'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Map Macro'),
+      '#size' => 60,
+      '#maxlength' => 500,
+      '#description' => t('A macro to be used as a base map for the location block.  This map will be recentered on the location, so the center is not that important. <p>Alternate base map macros can be entered for a specific node type below.'),
+      '#default_value' => variable_get('gmap_location_block_macro', '[gmap |width=100% |height=200px |control=None |behavior=+autozoom +notype]'),
+    );
+
+    $ntypes = node_type_get_types();
+    foreach ($ntypes as $key => $value) {
+      $settings = variable_get("location_settings_node_$key", FALSE);
+      if ((isset($settings['multiple']['max']) && $settings['multiple']['max']) || variable_get("location_maxnum_$key", 0)) {
+        $form["gmap_location_block_macro_$key"] = array(
           '#type' => 'textfield',
-          '#title' => t('Map Macro'),
+          '#title' => t('Map Macro for %type', array('%type' => $value->name)),
           '#size' => 60,
           '#maxlength' => 500,
-          '#description' => t('A macro to be used as a base map for the location block.  This map will be recentered on the location, so the center is not that important. <p>Alternate base map macros can be entered for a specific node type below.'),
-          '#default_value' => variable_get('gmap_location_block_macro', '[gmap |width=100% |height=200px |control=None |behavior=+autozoom +notype]'),
-        );
-
-        $ntypes = node_get_types();
-        foreach ($ntypes as $key => $value) {
-          $settings = variable_get("location_settings_node_$key", FALSE);
-          if ((isset($settings['multiple']['max']) && $settings['multiple']['max']) || variable_get("location_maxnum_$key", 0)) {
-            $form["gmap_location_block_macro_$key"] = array(
-              '#type' => 'textfield',
-              '#title' => t('Map Macro for %type', array('%type' => $value->name)),
-              '#size' => 60,
-              '#maxlength' => 500,
-              '#default_value' => variable_get("gmap_location_block_macro_$key", ''),
-            );
-          }
-        }
-      }
-      elseif ($delta == 1) { // Author map
-        $form['gmap_location_author_block_macro'] = array(
-          '#type' => 'textfield',
-          '#title' => t('Map Macro'),
-          '#size' => 60,
-          '#maxlength' => 500,
-          '#description' => t('A macro to be used as a base map for the location block author.  This map will be recentered on the location, so the center is not that important.'),
-          '#default_value' => variable_get('gmap_location_author_block_macro', '[gmap |width=100% |height=200px |control=None |behavior=+autozoom +notype]'),
-        );
-
-        $form['gmap_location_author_block_types'] = array(
-          '#type' => 'checkboxes',
-          '#title' => t('Enable author block for the following content types'),
-          '#options' => array_map('check_plain', node_get_types('names')),
-          '#default_value' => variable_get('gmap_location_author_block_types', array()),
-        );
-
-        $form['gmap_location_author_block_marker'] = array(
-          '#type' => 'gmap_markerchooser',
-          '#title' => t('Marker to use for author map'),
-          '#default_value' => variable_get('gmap_location_author_block_marker', 'drupal'),
+          '#default_value' => variable_get("gmap_location_block_macro_$key", ''),
         );
       }
-      return $form;
+    }
+  }
+  elseif ($delta == 1) { // Author map
+    $form['gmap_location_author_block_macro'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Map Macro'),
+      '#size' => 60,
+      '#maxlength' => 500,
+      '#description' => t('A macro to be used as a base map for the location block author.  This map will be recentered on the location, so the center is not that important.'),
+      '#default_value' => variable_get('gmap_location_author_block_macro', '[gmap |width=100% |height=200px |control=None |behavior=+autozoom +notype]'),
+    );
 
-    case 'save':
-      if ($delta == 0) {
-        // Save macro, if customized.
-        $macro = trim($edit['gmap_location_block_macro']);
-        if ($macro == '[gmap |width=100% |height=200px |control=None |behavior=+autozoom +notype]' || empty($macro)) {
-          // If the user doesn't customize the variable, don't set it.
-          // This saves a lot of headache in the future.
-          variable_del('gmap_location_block_macro');
+    $form['gmap_location_author_block_types'] = array(
+      '#type' => 'checkboxes',
+      '#title' => t('Enable author block for the following content types'),
+      '#options' => array_map('check_plain', node_type_get_names()),
+      '#default_value' => variable_get('gmap_location_author_block_types', array()),
+    );
+
+    $form['gmap_location_author_block_marker'] = array(
+      '#type' => 'gmap_markerchooser',
+      '#title' => t('Marker to use for author map'),
+      '#default_value' => variable_get('gmap_location_author_block_marker', 'drupal'),
+    );
+  }
+  return $form;
+}
+
+/**
+ * Implement hook_block_save().
+ */
+function gmap_location_block_save($delta = '', $edit = array()) {
+  if ($delta == 0) {
+    // Save macro, if customized.
+    $macro = trim($edit['gmap_location_block_macro']);
+    if ($macro == '[gmap |width=100% |height=200px |control=None |behavior=+autozoom +notype]' || empty($macro)) {
+      // If the user doesn't customize the variable, don't set it.
+      // This saves a lot of headache in the future.
+      variable_del('gmap_location_block_macro');
+    }
+    else {
+      variable_set('gmap_location_block_macro', $macro);
+    }
+
+    // Save node type specific macros.
+    $ntypes = node_type_get_types();
+    foreach ($ntypes as $key => $value) {
+      $settings = variable_get("location_settings_node_$key", FALSE);
+      if ((isset($settings['multiple']['max']) && $settings['multiple']['max']) || variable_get("location_maxnum_$key", 0)) {
+        $val = trim($edit["gmap_location_block_macro_$key"]);
+        if (empty($val)) {
+          variable_del("gmap_location_block_macro_$key");
         }
         else {
-          variable_set('gmap_location_block_macro', $macro);
-        }
-
-        // Save node type specific macros.
-        $ntypes = node_get_types();
-        foreach ($ntypes as $key => $value) {
-          $settings = variable_get("location_settings_node_$key", FALSE);
-          if ((isset($settings['multiple']['max']) && $settings['multiple']['max']) || variable_get("location_maxnum_$key", 0)) {
-            $val = trim($edit["gmap_location_block_macro_$key"]);
-            if (empty($val)) {
-              variable_del("gmap_location_block_macro_$key");
-            }
-            else {
-              variable_set('gmap_location_block_macro_' . $key, $edit['gmap_location_block_macro_' . $key]);
-            }
-          }
+          variable_set('gmap_location_block_macro_' . $key, $edit['gmap_location_block_macro_' . $key]);
         }
       }
-      elseif ($delta == 1) {
-        // Save macro, if customized.
-        $macro = trim($edit['gmap_location_author_block_macro']);
-        if ($macro == '[gmap |width=100% |height=200px |control=None |behavior=+autozoom +notype]' || empty($macro)) {
-          // If the user doesn't customize the variable, don't set it.
-          // This saves a lot of headache in the future.
-          variable_del('gmap_location_author_block_macro');
-        }
-        else {
-          variable_set('gmap_location_author_block_macro', $macro);
-        }
+    }
+  }
+  elseif ($delta == 1) {
+    // Save macro, if customized.
+    $macro = trim($edit['gmap_location_author_block_macro']);
+    if ($macro == '[gmap |width=100% |height=200px |control=None |behavior=+autozoom +notype]' || empty($macro)) {
+      // If the user doesn't customize the variable, don't set it.
+      // This saves a lot of headache in the future.
+      variable_del('gmap_location_author_block_macro');
+    }
+    else {
+      variable_set('gmap_location_author_block_macro', $macro);
+    }
 
-        // Save "enabled on" types.
-        variable_set('gmap_location_author_block_types', array_keys(array_filter($edit['gmap_location_author_block_types'])));
-        // Save marker.
-        variable_set('gmap_location_author_block_marker', $edit['gmap_location_author_block_marker']);
-      }
-      return;
-
-    case 'view':
-      switch ($delta) {
-        case 0:
-          if (arg(0)=='node' && is_numeric(arg(1))) {
-            return gmap_location_block_view(arg(1));
-          }
-          break;
-        case 1:
-          if (arg(0)=='node' && is_numeric(arg(1))) {
-            return gmap_location_author_block_view(arg(1));
-          }
-          break;
-      }
+    // Save "enabled on" types.
+    variable_set('gmap_location_author_block_types', array_keys(array_filter($edit['gmap_location_author_block_types'])));
+    // Save marker.
+    variable_set('gmap_location_author_block_marker', $edit['gmap_location_author_block_marker']);
   }
 }
 
-function gmap_location_block_view($nid) {
+/**
+ * Implement hook_block_view().
+ */
+function gmap_location_block_view($delta = '') {
+  switch ($delta) {
+    case 0:
+      if (arg(0)=='node' && is_numeric(arg(1))) {
+        return _gmap_location_block_view(arg(1));
+      }
+      break;
+    case 1:
+      if (arg(0)=='node' && is_numeric(arg(1))) {
+        return _gmap_location_author_block_view(arg(1));
+      }
+      break;
+  }
+}
+
+function _gmap_location_block_view($nid) {
   $block = array();
   $node = node_load($nid);
   if ($node->locations) {
@@ -738,7 +746,7 @@ function gmap_location_block_view($nid) {
   return $block;
 }
 
-function gmap_location_author_block_view($nid) {
+function _gmap_location_author_block_view($nid) {
   $block = array();
   $node = node_load($nid);
   if (in_array($node->type, variable_get('gmap_location_author_block_types', array()))) {
