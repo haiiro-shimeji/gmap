@@ -256,7 +256,7 @@ function _gmap_base_js() {
   $path = drupal_get_path('module', 'gmap');
   
   $ret[$path . '/js/gmap.js'] = array('weight' => 1);
-  $ret[$path . '/js/icon.js'] = array('weight' => 1);
+  $ret[$path . '/js/icon.js'] = array('weight' => 2);
 
   $mm = variable_get('gmap_mm_type', 'gmap');
 /*
@@ -278,14 +278,14 @@ function _gmap_base_js() {
   }
 */
 
-  $ret[$path . '/js/marker.js'] = array('weight' => 1);
-  $ret[$path . '/js/highlight.js'] = array('weight' => 1);
-  $ret[$path . '/js/' . $mm . '_marker.js'] = array('weight' => 2);
+  $ret[$path . '/js/marker.js'] = array('weight' => 2);
+  $ret[$path . '/js/highlight.js'] = array('weight' => 2);
+  $ret[$path . '/js/' . $mm . '_marker.js'] = array('weight' => 3);
 /*
   drupal_add_js(array('gmap_markermanager' => $mms[$mm]), 'setting');
 */
 
-  $ret[$path . '/js/poly.js'] = array('weight' => 2);
+  $ret[$path . '/js/poly.js'] = array('weight' => 3);
 
   global $language;
   $query = array(
