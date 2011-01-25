@@ -302,4 +302,11 @@ class gmap_plugin_style_gmapextended extends views_plugin_style {
       form_error($form['highlight_nodearg_color'], t('Highlight colour must be a valid hex code in the form #FF0000.'));
     }
   }
+
+  function render() {
+    if (isset($this->view->live_preview) && $this->view->live_preview) {
+      return t('GMap views are not compatible with live preview.');
+    }
+    return parent::render();
+  }
 }
