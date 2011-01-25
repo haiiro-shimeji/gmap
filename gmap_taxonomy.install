@@ -42,10 +42,7 @@ function gmap_taxonomy_schema() {
       'tid'    => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0),
       'marker' => array('type' => 'varchar', 'length' => 32),
     ),
-    'primary key' => array('vid'),
-    'indexes' => array(
-      'nid' => array('nid'),
-    ),
+    'primary key' => array('nid'),
   );
 
   return $schema;
@@ -93,3 +90,12 @@ function gmap_taxonomy_update_6001() {
 
   return $ret;
 }
+
+/**
+ * Rebuild {gmap_taxonomy_node} again.
+ */
+/*
+function gmap_taxonomy_update_7000() {
+  // @@@ FIXME -- rebuild the table from scratch again.
+}
+*/
