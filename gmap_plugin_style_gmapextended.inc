@@ -54,6 +54,8 @@ class gmap_plugin_style_gmapextended extends views_plugin_style {
       '' => t('Unused'),
       'text' => t('Marker bubble contents'),
       'rmt' => t('RMT tail'), // @@@ Stupid title
+      'iwq' => t('Info window query'),
+      'iwo' => t('Info window offset'),
       'link' => t('URL to visit when clicking marker'),
       'latitude' => t('Marker latitude'),
       'longitude' => t('Marker longitude'),
@@ -139,6 +141,7 @@ class gmap_plugin_style_gmapextended extends views_plugin_style {
         'render' => t('Show formatted row in bubble'),
         'text' => t('Show defined text in bubble'),
         'rmt' => t('Fetch data from callback in bubble (RMT mode)'),
+        'iwq' => t('Use pieces of the DOM (iwq mode)'),
         'link' => t('Go to URL'),
       ),
       '#default_value' => isset($this->options['clickmode']) ? $this->options['clickmode'] : 'render',
@@ -151,6 +154,15 @@ class gmap_plugin_style_gmapextended extends views_plugin_style {
       '#default_value' => $this->options['rmtcallback'],
       '#process' => array('ctools_dependent_process'),
       '#dependency' => array('radio:style_options[clickmode]' => array('rmt')),
+    );
+    
+    $form['iwq'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Info window query (default)'),
+      '#description' => t('Define the default info window query here. This is in the form of a jQuery selector. You will usually want to match a set of divs and then use iwo to choose which one.'),
+      '#process' => array('ctools_dependent_process'),
+      '#default_value' => $this->options['iwq'],
+      '#dependency' => array('radio:style_options[clickmode]' => array('iwq')),
     );
 
     $form['fallback_values'] = array(
@@ -170,10 +182,24 @@ class gmap_plugin_style_gmapextended extends views_plugin_style {
     );
     $form['fallback_values']['rmt'] = array(
       '#type' => 'textfield',
-      '#title'  => t('RMT tail'),
+      '#title' => t('RMT tail'),
       '#default_value' => isset($default['rmt']) ? $default['rmt'] : '',
       '#process' => array('ctools_dependent_process'),
       '#dependency' => array('radio:style_options[clickmode]' => array('rmt')),
+    );
+    $form['fallback_values']['iwq'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Info window query'),
+      '#default_value' => isset($default['iwq']) ? $default['iwq'] : '',
+      '#process' => array('ctools_dependent_process'),
+      '#dependency' => array('radio:style_options[clickmode]' => array('iwq')),
+    );
+    $form['fallback_values']['iwo'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Info window offset'),
+      '#default_value' => isset($default['iwo']) ? $default['iwo'] : '',
+      '#process' => array('ctools_dependent_process'),
+      '#dependency' => array('radio:style_options[clickmode]' => array('iwq')),
     );
     $form['fallback_values']['link'] = array(
       '#type' => 'textfield',

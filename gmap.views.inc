@@ -14,7 +14,11 @@ function theme_gmap_views_view_gmapextended(&$vars) {
     }
     $markers[] = $data;
   }
+  // @@@ Move to preprocess
   $map = gmap_parse_macro($vars['options']['macro']);
+  if (!empty($vars['options']['iwq'])) {
+    $map['iwq'] = $vars['options']['iwq'];
+  }
   $map['markers'] = $markers;
   $elem = array(
     '#type' => 'gmap',
@@ -69,16 +73,36 @@ function template_preprocess_gmap_views_view_gmapextended(&$vars) {
       case 'text':
         unset ($markers[$offset]['link']);
         unset ($markers[$offset]['rmt']);
+        unset ($markers[$offset]['iwq']);
+        unset ($markers[$offset]['iwo']);
         break;
 
       case 'rmt':
         unset ($markers[$offset]['text']);
         unset ($markers[$offset]['link']);
+        unset ($markers[$offset]['iwq']);
+        unset ($markers[$offset]['iwo']);
         break;
 
       case 'link':
         unset ($markers[$offset]['text']);
         unset ($markers[$offset]['rmt']);
+        unset ($markers[$offset]['iwq']);
+        unset ($markers[$offset]['iwo']);
+        break;
+
+      case 'iwq':
+        // @@@ May need to parse entities for stuff like .foo>.bar
+        $markers[$offset]['iwq'] = trim($markers[$offset]['iwq']);
+        $markers[$offset]['iwo'] = (int)trim($markers[$offset]['iwo']);
+        if (empty($markers[$offset]['iwq']) || $markers[$offset]['iwq'] == $options['iwq']) {
+          unset($markers[$offset]['iwq']);
+        }
+
+        unset ($markers[$offset]['text']);
+        unset ($markers[$offset]['link']);
+        unset ($markers[$offset]['rmt']);
+        break;
     }
   }
 
