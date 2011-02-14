@@ -6,7 +6,7 @@
  * GMap API version / Base case
  */
 
-/*global $, Drupal, GEvent, GLatLng, GPolygon, GPolyline */
+/*global jQuery, Drupal, GEvent, GLatLng, GPolygon, GPolyline */
 
 Drupal.gmap.addHandler('gmap', function (elem) {
   var obj = this;
@@ -32,12 +32,12 @@ Drupal.gmap.addHandler('gmap', function (elem) {
       pa = obj.poly.calcPolyPoints(shape.center, radius, shape.numpoints);
     }
     else if (shape.type === 'polygon') {
-      $.each(shape.points, function (i, n) {
+      jQuery.each(shape.points, function (i, n) {
         pa.push(new GLatLng(n[0], n[1]));
       });
     }
     else if (shape.type === 'line') {
-      $.each(shape.points, function (i, n) {
+      jQuery.each(shape.points, function (i, n) {
         pa.push(new GLatLng(n[0], n[1]));
       });
       fillstyle = false;
@@ -75,7 +75,7 @@ Drupal.gmap.addHandler('gmap', function (elem) {
       shape.opacity = style[2];
     }
     else if (shape.type == 'encoded_polygon') {
-      $.each(shape.polylines, function(i, polyline) {
+      jQuery.each(shape.polylines, function(i, polyline) {
         polyline.color = style[0];
         polyline.weight = style[1];
         polyline.opacity = style[2];
@@ -86,7 +86,7 @@ Drupal.gmap.addHandler('gmap', function (elem) {
       shape.outline = true;
     }
 
-    $.each(style, function (i, n) {
+    jQuery.each(style, function (i, n) {
       cargs.push(n);
     });
     if (shape.opts) {
@@ -138,7 +138,7 @@ Drupal.gmap.addHandler('gmap', function (elem) {
 
   obj.bind('clearshapes', function () {
     if (obj.vars.shapes) {
-      $.each(obj.vars.shapes, function (i, n) {
+      jQuery.each(obj.vars.shapes, function (i, n) {
         obj.change('delshape', -1, n);
       });
     }
