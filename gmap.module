@@ -649,14 +649,14 @@ function _gmap_pre_render_map($element) {
   }
 
   if (!empty($map['markers']) || !empty($map['lines'])) {
-    $element['#attached']['js']["$path/markerloader_static.js"] = array('weight' => 2);
+    $element['#attached']['js']["$path/markerloader_static.js"] = array('weight' => 5);
   }
   if (!empty($map['shapes'])) {
-    $element['#attached']['js']["$path/shapeloader_static.js"] = array('weight' => 2);
-    $element['#attached']['js']["$path/gmap_shapes.js"] = array('weight' => 2);
+    $element['#attached']['js']["$path/shapeloader_static.js"] = array('weight' => 5);
+    $element['#attached']['js']["$path/gmap_shapes.js"] = array('weight' => 5);
   }
   if (isset($map['feed']) && is_array($map['feed'])) {
-    $element['#attached']['js']["$path/markerloader_georss.js"] = array('weight' => 2);
+    $element['#attached']['js']["$path/markerloader_georss.js"] = array('weight' => 5);
   }
 
   return $element;
