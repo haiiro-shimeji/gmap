@@ -283,10 +283,10 @@ function _gmap_base_js() {
   // @@@TODO Need to allow multiple inclusion and have marker manager set at the map level.
   $mm = variable_get('gmap_mm_type', 'gmap');
   $mms = variable_get('gmap_markermanager', array());
-  $ret[$path . '/js/' . $mm . '_marker.js'] = array('weight' => 3);
   if (isset($mms[$mm]['filename'])) {
-    $ret[$path . '/thirdparty/' . $mms[$mm]['filename']] = array('weight' => 4);
+    $ret[$path . '/thirdparty/' . $mms[$mm]['filename']] = array('weight' => 3);
   }
+  $ret[$path . '/js/' . $mm . '_marker.js'] = array('weight' => 4);
 /*
   drupal_add_js(array('gmap_markermanager' => $mms[$mm]), 'setting');
 */
