@@ -175,6 +175,10 @@ Drupal.gmap.map = function (v) {
       this.change('all', -1, name, userdata);
     }
   };
+  
+  this.clearCallbacks = function (name) {
+    if (_bindings[name]) _bindings[name] = [];
+  }
 
   /**
    * Deferred change notification.

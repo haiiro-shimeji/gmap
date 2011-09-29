@@ -182,14 +182,13 @@ Drupal.gmap.addHandler('overlayedit', function (elem) {
     obj.vars.overlay_add_mode = 'Points'; //elem.value;
     obj.vars.overlay_del_mode = 'Remove';
     var edit_text_elem;
-
+    
     if (obj.map) {
       obj._oe.features = [];
       obj._oe.featuresRef = {};
       obj._oe.editing = false;
       obj._oe.markerseq = {};
       GEvent.addListener(obj.map, 'click', function (overlay, point) {
-        var ctx, s, p;
         if (overlay) {
           if (obj._oe.editing) {
             // Work around problem where double clicking to finish a poly fires a click event.
@@ -200,177 +199,203 @@ Drupal.gmap.addHandler('overlayedit', function (elem) {
         }
         else if (point && !obj._oe.editing) {
           obj._oe.editing = true;
-          switch (obj.vars.overlay_add_mode) {
-            case 'Points':
-              var m = elem.value; // @@@ It's kinda silly to be binding the whole shebang to this dropdown..
-              if (!obj._oe.markerseq.hasOwnProperty(m)) {
-                obj._oe.markerseq[m] = -1;
-              }
-              obj._oe.markerseq[m] = obj._oe.markerseq[m] + 1;
-              p = new GMarker(point, {icon: Drupal.gmap.getIcon(m, obj._oe.markerseq[m])});
-              obj.map.addOverlay(p);
-              ctx = {
-                'type' : 'point',
-                'marker' : m,
-                'overlay' : p
-              };
-              var offset = obj._oe.features.push(ctx) - 1;
-              obj._oe.editing = false;
-              GEvent.addListener(p, "click", function () {
-                switch (obj.vars.overlay_del_mode) {
-                  case 'Remove':
-                    obj._oe.markerseq[m] = obj._oe.markerseq[m] - 1;
-                    ctx.type = 'deleted';
-                    obj.map.removeOverlay(p);
-                    ctx.overlay = null;
-                    var tmpcnt = 0;
-                    // Renumber markers in set.
-                    jQuery.each(obj._oe.features, function (i, n) {
-                      if (n.type && n.type === 'point' && n.marker === m) {
-                        var pt = n.overlay.getLatLng();
-                        n.overlay.setImage(Drupal.gmap.getIcon(n.marker, tmpcnt).image);
-                        tmpcnt = tmpcnt + 1;
-                      }
-                    });
-                    break;
-                  case 'Edit info':
-                    // @@@
-                    break;
-                }
-                obj.change('mapedited', -1);
-              });
-              obj.change('mapedited', -1);
-              break;
-
-            case 'Lines':
-              ctx = {
-                'type' : 'polyline',
-                'style' : [],
-                'overlay' : null
-              };
-              s = obj.vars.styles.line_default;
-              if (obj.vars.overlay_linestyle_apply) {
-                ctx.style = obj.vars.styles.overlayline.slice();
-                s = ctx.style;
-              }
-              p = new GPolyline([point], '#' + s[0], Number(s[1]), s[2] / 100);
-              obj.map.addOverlay(p);
-              ctx.overlay = p;
-              obj._oe.featuresRef[p] = obj._oe.features.push(ctx) - 1;
-
-              p.enableDrawing();
-              p.enableEditing({onEvent: "mouseover"});
-              p.disableEditing({onEvent: "mouseout"});
-              GEvent.addListener(p, "endline", function () {
-                //obj._oe.editing = false;
-                GEvent.addListener(p, "lineupdated", function () {
-                  obj.change('mapedited', -1);
-                });
-                GEvent.addListener(p, "click", function (latlng, index) {
-                  if (typeof index === "number") {
-                    // Delete vertex on click.
-                    p.deleteVertex(index);
-                  }
-                  else {
-                    var feature = obj._oe.features[obj._oe.featuresRef[p]];
-                    feature.stroke = obj.vars.stroke; // @@@
-                    p.setStrokeStyle(feature.stroke);
-                  }
-                });
-                obj.change('mapedited', -1);
-              });
-              break;
-
-            case 'GPolygon':
-              ctx = {
-                'type' : 'polygon',
-                'style' : [],
-                'overlay' : null
-              };
-              s = obj.vars.styles.poly_default;
-              if (obj.vars.overlay_polystyle_apply) {
-                ctx.style = obj.vars.styles.overlaypoly.slice();
-                s = ctx.style;
-              }
-              p = new GPolygon([point], '#' + s[0], Number(s[1]), s[2] / 100, '#' + s[3], s[4] / 100);
-              obj.map.addOverlay(p);
-              ctx.overlay = p;
-              obj._oe.featuresRef[p] = obj._oe.features.push(ctx) - 1;
-
-              p.enableDrawing();
-              p.enableEditing({onEvent: "mouseover"});
-              p.disableEditing({onEvent: "mouseout"});
-              GEvent.addListener(p, "endline", function () {
-                //obj._oe.editing = false;
-                GEvent.addListener(p, "lineupdated", function () {
-                  obj.change('mapedited', -1);
-                });
-                GEvent.addListener(p, "click", function (latlng, index) {
-                  if (typeof index === "number") {
-                    p.deleteVertex(index);
-                  }
-                  else {
-                    var feature = obj._oe.features[obj._oe.featuresRef[p]];
-                    feature.stroke = obj.vars.stroke;
-                    feature.fill = obj.vars.fill;
-                    p.setStrokeStyle(feature.stroke);
-                    p.setFillStyle(feature.fill); // @@@
-                  }
-                });
-                obj.change('mapedited', -1);
-              });
-              break;
-
-            case 'Circles':
-              var temppoint = point;
-              // @@@ Translate
-              obj.status("Drawing circle. Click a point on the rim to place.");
-
-              var handle = GEvent.addListener(obj.map, 'click', function (overlay, point) {
-                if (point) {
-                  var ctx = {
-                    'type' : 'circle',
-                    'center' : temppoint,
-                    'radius' : null,
-                    'style' : [],
-                    'overlay' : null
-                  };
-                  var s = obj.vars.styles.poly_default;
-                  if (obj.vars.overlay_polystyle_apply) {
-                    ctx.style = obj.vars.styles.overlaypoly.slice();
-                    s = ctx.style;
-                  }
-                  obj.status("Placed circle. Radius was " + temppoint.distanceFrom(point) / 1000 + " km.");
-                  ctx.radius = temppoint.distanceFrom(point);
-                  var p = new GPolygon(obj.poly.calcPolyPoints(ctx.center, ctx.radius, 32), '#' + s[0], Number(s[1]), s[2] / 100, '#' + s[3], s[4] / 100);
-                  obj.map.addOverlay(p);
-                  ctx.overlay = p;
-                  obj._oe.featuresRef[p] = obj._oe.features.push(ctx) - 1;
-                  GEvent.addListener(p, "click", function () {
-                    switch (obj.vars.overlay_del_mode) {
-                      case 'Remove':
-                        ctx.type = 'deleted';
-                        obj.map.removeOverlay(p);
-                        ctx.overlay = null;
-                        break;
-                      case 'Edit info':
-                        // @@@
-                        break;
-                    }
-                    obj.change('mapedited', -1);
-                  });
-                }
-                else {
-                  // @@@ Uh, do cleanup I suppose..
-                }
-                obj._oe.editing = false;
-                GEvent.removeListener(handle);
-                obj.change('mapedited', -1);
-              });
-              break;
-          }
+          obj.addPointToEditor( point, elem.value, obj.vars.overlay_add_mode );
         }
       });
     }
   });
+
+  obj.clearCallbacks('addmarker');
+  obj.bind('addmarker', function ( marker ) {
+    obj.addPointToEditor( new GLatLng( marker.latitude, marker.longitude ), marker.markername, 'Points' );
+  } );
+  
 });
+
+Drupal.gmap.map.prototype.addPointToEditor = function( point, m, type ) {
+  
+  var obj = this;
+  var ctx, s, p;
+        
+  switch (type) {
+    case 'Points':
+      if (!obj._oe.markerseq.hasOwnProperty(m)) {
+        obj._oe.markerseq[m] = -1;
+      }
+      obj._oe.markerseq[m] = obj._oe.markerseq[m] + 1;
+      p = new GMarker(point, {
+        icon: Drupal.gmap.getIcon(m, obj._oe.markerseq[m])
+      });
+      obj.map.addOverlay(p);
+      ctx = {
+        'type' : 'point',
+        'marker' : m,
+        'overlay' : p
+      };
+      var offset = obj._oe.features.push(ctx) - 1;
+      obj._oe.editing = false;
+      GEvent.addListener(p, "click", function () {
+        switch (obj.vars.overlay_del_mode) {
+          case 'Remove':
+            obj._oe.markerseq[m] = obj._oe.markerseq[m] - 1;
+            ctx.type = 'deleted';
+            obj.map.removeOverlay(p);
+            ctx.overlay = null;
+            var tmpcnt = 0;
+            // Renumber markers in set.
+            jQuery.each(obj._oe.features, function (i, n) {
+              if (n.type && n.type === 'point' && n.marker === m) {
+                var pt = n.overlay.getLatLng();
+                n.overlay.setImage(Drupal.gmap.getIcon(n.marker, tmpcnt).image);
+                tmpcnt = tmpcnt + 1;
+              }
+            });
+            break;
+          case 'Edit info':
+            // @@@
+            break;
+        }
+        obj.change('mapedited', -1);
+      });
+      obj.change('mapedited', -1);
+      break;
+
+    case 'Lines':
+      ctx = {
+        'type' : 'polyline',
+        'style' : [],
+        'overlay' : null
+      };
+      s = obj.vars.styles.line_default;
+      if (obj.vars.overlay_linestyle_apply) {
+        ctx.style = obj.vars.styles.overlayline.slice();
+        s = ctx.style;
+      }
+      p = new GPolyline([point], '#' + s[0], Number(s[1]), s[2] / 100);
+      obj.map.addOverlay(p);
+      ctx.overlay = p;
+      obj._oe.featuresRef[p] = obj._oe.features.push(ctx) - 1;
+
+      p.enableDrawing();
+      p.enableEditing({
+        onEvent: "mouseover"
+      });
+      p.disableEditing({
+        onEvent: "mouseout"
+      });
+      GEvent.addListener(p, "endline", function () {
+        //obj._oe.editing = false;
+        GEvent.addListener(p, "lineupdated", function () {
+          obj.change('mapedited', -1);
+        });
+        GEvent.addListener(p, "click", function (latlng, index) {
+          if (typeof index === "number") {
+            // Delete vertex on click.
+            p.deleteVertex(index);
+          }
+          else {
+            var feature = obj._oe.features[obj._oe.featuresRef[p]];
+            feature.stroke = obj.vars.stroke; // @@@
+            p.setStrokeStyle(feature.stroke);
+          }
+        });
+        obj.change('mapedited', -1);
+      });
+      break;
+
+    case 'GPolygon':
+      ctx = {
+        'type' : 'polygon',
+        'style' : [],
+        'overlay' : null
+      };
+      s = obj.vars.styles.poly_default;
+      if (obj.vars.overlay_polystyle_apply) {
+        ctx.style = obj.vars.styles.overlaypoly.slice();
+        s = ctx.style;
+      }
+      p = new GPolygon([point], '#' + s[0], Number(s[1]), s[2] / 100, '#' + s[3], s[4] / 100);
+      obj.map.addOverlay(p);
+      ctx.overlay = p;
+      obj._oe.featuresRef[p] = obj._oe.features.push(ctx) - 1;
+
+      p.enableDrawing();
+      p.enableEditing({
+        onEvent: "mouseover"
+      });
+      p.disableEditing({
+        onEvent: "mouseout"
+      });
+      GEvent.addListener(p, "endline", function () {
+        //obj._oe.editing = false;
+        GEvent.addListener(p, "lineupdated", function () {
+          obj.change('mapedited', -1);
+        });
+        GEvent.addListener(p, "click", function (latlng, index) {
+          if (typeof index === "number") {
+            p.deleteVertex(index);
+          }
+          else {
+            var feature = obj._oe.features[obj._oe.featuresRef[p]];
+            feature.stroke = obj.vars.stroke;
+            feature.fill = obj.vars.fill;
+            p.setStrokeStyle(feature.stroke);
+            p.setFillStyle(feature.fill); // @@@
+          }
+        });
+        obj.change('mapedited', -1);
+      });
+      break;
+
+    case 'Circles':
+      var temppoint = point;
+      // @@@ Translate
+      obj.status("Drawing circle. Click a point on the rim to place.");
+
+      var handle = GEvent.addListener(obj.map, 'click', function (overlay, point) {
+        if (point) {
+          var ctx = {
+            'type' : 'circle',
+            'center' : temppoint,
+            'radius' : null,
+            'style' : [],
+            'overlay' : null
+          };
+          var s = obj.vars.styles.poly_default;
+          if (obj.vars.overlay_polystyle_apply) {
+            ctx.style = obj.vars.styles.overlaypoly.slice();
+            s = ctx.style;
+          }
+          obj.status("Placed circle. Radius was " + temppoint.distanceFrom(point) / 1000 + " km.");
+          ctx.radius = temppoint.distanceFrom(point);
+          var p = new GPolygon(obj.poly.calcPolyPoints(ctx.center, ctx.radius, 32), '#' + s[0], Number(s[1]), s[2] / 100, '#' + s[3], s[4] / 100);
+          obj.map.addOverlay(p);
+          ctx.overlay = p;
+          obj._oe.featuresRef[p] = obj._oe.features.push(ctx) - 1;
+          GEvent.addListener(p, "click", function () {
+            switch (obj.vars.overlay_del_mode) {
+              case 'Remove':
+                ctx.type = 'deleted';
+                obj.map.removeOverlay(p);
+                ctx.overlay = null;
+                break;
+              case 'Edit info':
+                // @@@
+                break;
+            }
+            obj.change('mapedited', -1);
+          });
+        }
+        else {
+        // @@@ Uh, do cleanup I suppose..
+        }
+        obj._oe.editing = false;
+        GEvent.removeListener(handle);
+        obj.change('mapedited', -1);
+      });
+      break;
+  }
+  
+  return p;
+  
+}
