@@ -14,7 +14,7 @@ Drupal.gmap.addHandler('gmap', function (elem) {
   var obj = this;
   if (obj.vars.shapes) {
     // Inject shapes during init.
-    obj.bind('init', function () {
+    obj.bind('iconsready', function () {
       // We need to move the incoming shapes out of the way,
       // because addshape will readd them, causing an infinate loop.
       // Store the shapes in s and reset obj.vars.shapes.

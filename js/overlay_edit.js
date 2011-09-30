@@ -203,19 +203,29 @@ Drupal.gmap.addHandler('overlayedit', function (elem) {
         }
       });
     }
+    
+    obj.clearCallbacks('addshape');
+    obj.bind('addshape', function ( shape ) {
+      var points = [];
+      for ( var i in shape.points )
+        points.push( new GLatLng( shape.points[i][0], shape.points[i][1] ) );
+      obj.addPointToEditor( points, null, ( 'line' == shape.type.toLowerCase() ? 'Lines'
+                                            : ( 'polygon' == shape.type.toLowerCase() ? 'GPolygon'
+                                            : '' ) ) );
+    } );
+    obj.clearCallbacks('addmarker');
+    obj.bind('addmarker', function ( marker ) {
+      obj.addPointToEditor( new GLatLng( marker.latitude, marker.longitude ), marker.markername, 'Points' );
+    } );
+  
   });
 
-  obj.clearCallbacks('addmarker');
-  obj.bind('addmarker', function ( marker ) {
-    obj.addPointToEditor( new GLatLng( marker.latitude, marker.longitude ), marker.markername, 'Points' );
-  } );
-  
 });
 
 Drupal.gmap.map.prototype.addPointToEditor = function( point, m, type ) {
   
   var obj = this;
-  var ctx, s, p;
+  var ctx, s, p, points;
         
   switch (type) {
     case 'Points':
@@ -271,19 +281,13 @@ Drupal.gmap.map.prototype.addPointToEditor = function( point, m, type ) {
         ctx.style = obj.vars.styles.overlayline.slice();
         s = ctx.style;
       }
-      p = new GPolyline([point], '#' + s[0], Number(s[1]), s[2] / 100);
+      points = ( ( point instanceof Array ) ? point : [point] );
+      p = new GPolyline(points, '#' + s[0], Number(s[1]), s[2] / 100);
       obj.map.addOverlay(p);
       ctx.overlay = p;
       obj._oe.featuresRef[p] = obj._oe.features.push(ctx) - 1;
 
-      p.enableDrawing();
-      p.enableEditing({
-        onEvent: "mouseover"
-      });
-      p.disableEditing({
-        onEvent: "mouseout"
-      });
-      GEvent.addListener(p, "endline", function () {
+      var lineListener = function () {
         //obj._oe.editing = false;
         GEvent.addListener(p, "lineupdated", function () {
           obj.change('mapedited', -1);
@@ -300,7 +304,17 @@ Drupal.gmap.map.prototype.addPointToEditor = function( point, m, type ) {
           }
         });
         obj.change('mapedited', -1);
+      }
+
+      if ( !(point instanceof Array) ) p.enableDrawing();
+      p.enableEditing({
+        onEvent: "mouseover"
       });
+      p.disableEditing({
+        onEvent: "mouseout"
+      });
+      GEvent.addListener(p, "endline", lineListener());
+      if ( !(point instanceof Array) ) lineListener();
       break;
 
     case 'GPolygon':
@@ -314,19 +328,13 @@ Drupal.gmap.map.prototype.addPointToEditor = function( point, m, type ) {
         ctx.style = obj.vars.styles.overlaypoly.slice();
         s = ctx.style;
       }
-      p = new GPolygon([point], '#' + s[0], Number(s[1]), s[2] / 100, '#' + s[3], s[4] / 100);
+      points = ( ( point instanceof Array ) ? point : [point] );
+      p = new GPolygon(points, '#' + s[0], Number(s[1]), s[2] / 100, '#' + s[3], s[4] / 100);
       obj.map.addOverlay(p);
       ctx.overlay = p;
       obj._oe.featuresRef[p] = obj._oe.features.push(ctx) - 1;
-
-      p.enableDrawing();
-      p.enableEditing({
-        onEvent: "mouseover"
-      });
-      p.disableEditing({
-        onEvent: "mouseout"
-      });
-      GEvent.addListener(p, "endline", function () {
+      
+      var polyListener = function () {
         //obj._oe.editing = false;
         GEvent.addListener(p, "lineupdated", function () {
           obj.change('mapedited', -1);
@@ -344,7 +352,17 @@ Drupal.gmap.map.prototype.addPointToEditor = function( point, m, type ) {
           }
         });
         obj.change('mapedited', -1);
+      };
+
+      if ( !(point instanceof Array) ) p.enableDrawing();
+      p.enableEditing({
+        onEvent: "mouseover"
       });
+      p.disableEditing({
+        onEvent: "mouseout"
+      });
+      GEvent.addListener(p, "endline", polyListener());
+      if ( !(point instanceof Array) ) polyListener();
       break;
 
     case 'Circles':
