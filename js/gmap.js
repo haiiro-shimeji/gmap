@@ -595,3 +595,11 @@ Drupal.behaviors.GMap = {
     jQuery('.gmap-control:not(.gmap-processed)', context).addClass('gmap-processed').each(function () {Drupal.gmap.setup.call(this)});
   }
 };
+
+jQuery(document).ready( function() {
+  jQuery('.gmap_open_macrobuilder').click( function() {
+    var macro = jQuery(this).parents('.field-type-text-long:first').find('textarea').val();
+    window.open( jQuery(this).attr('href')+'?macro='+macro , '');
+    return false;
+  } );
+} );

@@ -513,7 +513,7 @@ function _gmap_filter_process($text, $filter, $format) {
  */
 function _gmap_filter_tips($filter, $format, $long = FALSE) {
   if (user_access('create gmap macro')) { // only display macro if user can create one
-    return t('Insert Google Map macro.') . '<a href="' . url('map/macro') . '" target="_blank" >' . t('Create a macro') . '</a>';
+    return t('Insert Google Map macro.') . '<a class="gmap_open_macrobuilder" href="' . url('map/macro') . '" target="_blank" >' . t('Create a macro') . '</a>';
   }
   else {
     return t('Insert Google Map macro.');

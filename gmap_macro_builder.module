@@ -55,6 +55,12 @@ function gmap_macro_builder_menu() {
  */
 function gmap_macro_builder_form($form, &$form_state, $settings = array(), $hide = array()) {
   $path = drupal_get_path('module', 'gmap');
+  
+  if ( isset($_GET['macro']) and $_GET['macro']
+        and is_array( $d = gmap_parse_macro( $_GET['macro'] ) ) ) {
+    unset( $d['id'] );
+    $settings += $d;
+  }
 
   $form['macroform'] = array(
     '#type' => 'fieldset',
@@ -65,7 +71,7 @@ function gmap_macro_builder_form($form, &$form_state, $settings = array(), $hide
   $form['macroform']['mapdiv'] = array(
     '#type' => 'gmap',
     '#map' => 'macro_map',
-    '#settings' => array_merge(array(
+    '#gmap_settings' => array_merge(array(
       'points' => array(),
       'pointsOverlays' => array(),
       'behavior' => array(
@@ -73,6 +79,9 @@ function gmap_macro_builder_form($form, &$form_state, $settings = array(), $hide
       ),
     ), $settings),
   );
+  
+  $form['macroform']['mapdiv']['#settings'] 
+  = $form['macroform']['mapdiv']['#gmap_settings'];
 
   $defaults = array_merge(gmap_defaults(), $settings);
 
