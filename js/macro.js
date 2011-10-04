@@ -11,7 +11,7 @@
  */
 Drupal.gmap.addHandler('macrotext', function (elem) {
   var obj = this;
-  obj.macrostorage = {};
+  obj.macrostorage = { width: obj.vars.width, height: obj.vars.height };
 
   obj.bind("widthchange", function (w) {
     obj.macrostorage.width = w;
