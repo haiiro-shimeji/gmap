@@ -10,6 +10,8 @@
 Drupal.gmap.addHandler('gmap', function (elem) {
   var obj = this;
 
+  var infowindow = null;
+
   obj.bind('init', function () {
     if (obj.vars.behavior.autozoom) {
       obj.bounds = new google.maps.LatLngBounds();
@@ -51,7 +53,7 @@ Drupal.gmap.addHandler('gmap', function (elem) {
       obj.deferChange('clickmarker', -1, marker);
     }
     if (obj.vars.behavior.autozoom) {
-      obj.bounds.extend(marker.marker.getPoint());
+      obj.bounds.extend(new google.maps.LatLng(marker.latitude, marker.longitude));
     }
     // If the highlight arg option is used in views highlight the marker.
     if (marker.opts.highlight == 1) {
@@ -61,9 +63,15 @@ Drupal.gmap.addHandler('gmap', function (elem) {
 
   // Default marker actions.
   obj.bind('clickmarker', function (marker) {
-    // Local/stored content
+    // Close infowindow if open to prevent multiple windows
+    if (infowindow != null){
+      infowindow.close();
+    }
+    infowindow = new google.maps.InfoWindow({
+      content: marker.text
+    });
     if (marker.text) {
-      marker.marker.openInfoWindowHtml(marker.text);
+      infowindow.open(obj.map, marker.marker);
     }
     // Info Window Query / Info Window Offset
     if (marker.iwq || (obj.vars.iwq && typeof marker.iwo != 'undefined')) {
@@ -123,7 +131,14 @@ Drupal.gmap.addHandler('gmap', function (elem) {
     // If we are autozooming, set the map center at this time.
     if (obj.vars.behavior.autozoom) {
       if (!obj.bounds.isEmpty()) {
-        obj.map.setCenter(obj.bounds.getCenter(), Math.min(obj.map.getBoundsZoomLevel(obj.bounds), obj.vars.maxzoom));
+        obj.map.fitBounds(obj.bounds);
+        var listener = google.maps.event.addListener(obj.map, "idle", function() {
+          if (obj.vars.maxzoom) {
+            var maxzoom = parseInt(obj.vars.maxzoom)
+            if (obj.map.getZoom() > maxzoom) obj.map.setZoom(maxzoom); 
+            google.maps.event.removeListener(listener);             
+          }
+        });
       }
     }
   });
