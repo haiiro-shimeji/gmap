@@ -1,4 +1,5 @@
 
+
 /**
  * @file
  * Common marker routines.
@@ -11,33 +12,35 @@ Drupal.gmap.addHandler('gmap', function (elem) {
 
   obj.bind('init', function () {
     if (obj.vars.behavior.autozoom) {
-      obj.bounds = new GLatLngBounds();
+      obj.bounds = new google.maps.LatLngBounds();
     }
   });
 
   obj.bind('addmarker', function (marker) {
-    var m = Drupal.gmap.factory.marker(new GLatLng(marker.latitude, marker.longitude), marker.opts);
+    marker.opts.position = new google.maps.LatLng(marker.latitude, marker.longitude);
+    marker.opts.map = obj.map;
+    var m = Drupal.gmap.factory.marker(marker.opts);
     marker.marker = m;
-    GEvent.addListener(m, 'click', function () {
+    google.maps.event.addListener(m, 'click', function () {
       obj.change('clickmarker', -1, marker);
     });
     if (obj.vars.behavior.highlight) {
-      GEvent.addListener(m, 'mouseover', function () {
+      google.maps.event.addListener(m, 'mouseover', function () {
         var highlightColor = '#' + obj.vars.styles.highlight_color;
         highlightMarker(obj.map, marker, 'hoverHighlight', highlightColor);
       });
-      GEvent.addListener(m, 'mouseout', function () {
+      google.maps.event.addListener(m, 'mouseout', function () {
         unHighlightMarker(obj.map, marker, 'hoverHighlight');
       });
     }
     if (obj.vars.behavior.extramarkerevents) {
-      GEvent.addListener(m, 'mouseover', function () {
+      google.maps.event.addListener(m, 'mouseover', function () {
         obj.change('mouseovermarker', -1, marker);
       });
-      GEvent.addListener(m, 'mouseout', function () {
+      google.maps.event.addListener(m, 'mouseout', function () {
         obj.change('mouseoutmarker', -1, marker);
       });
-      GEvent.addListener(m, 'dblclick', function () {
+      google.maps.event.addListener(m, 'dblclick', function () {
         obj.change('dblclickmarker', -1, marker);
       });
     }
@@ -129,7 +132,7 @@ Drupal.gmap.addHandler('gmap', function (elem) {
     // Reset bounds if autozooming
     // @@@ Perhaps we should have a bounds for both markers and shapes?
     if (obj.vars.behavior.autozoom) {
-      obj.bounds = new GLatLngBounds();
+      obj.bounds = new google.maps.LatLngBounds();
     }
   });
 
