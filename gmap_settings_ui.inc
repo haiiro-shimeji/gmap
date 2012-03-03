@@ -17,25 +17,6 @@ function gmap_admin_settings($form, &$form_state) {
     '#title' => t('Google Map Initialize'),
   );
 
-  if (!module_exists('keys_api') && !module_exists('keys')) {
-    $form['initialization']['googlemap_api_key'] = array(
-      '#type' => 'textfield',
-      '#default_value' => variable_get('googlemap_api_key', ''),
-      '#size' => 50,
-      '#maxlength' => 255,
-    );
-  }
-  else {
-    $form['initialization']['googlemap_api_key'] = array(
-      '#type' => 'item',
-      '#title' => t('Google Maps API Key'),
-      '#value' => t('Managed by <a href="@url">Keys</a>.', array('@url' => url('admin/settings/keys'))),
-    );
-  }
-
-  $form['initialization']['googlemap_api_key']['#title'] = t('Google Maps API Key');
-  $form['initialization']['googlemap_api_key']['#description'] = t('Your personal Googlemaps API key.  You must get this for each separate website at <a href="http://code.google.com/apis/maps/signup.html">Google Map API website</a>.');
-
   if (variable_get('file_downloads', FILE_DOWNLOADS_PUBLIC) != FILE_DOWNLOADS_PUBLIC) {
     $form['initialization']['gmap_private_markerfile'] = array(
       '#type' => 'textfield',

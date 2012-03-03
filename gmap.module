@@ -921,12 +921,6 @@ function gmap_map_cleanup(&$map) {
 function theme_gmap($variables) {
   $element = $variables['element'];
 
-  // Usability: Prevent js errors on first visit to settings page, etc.
-  // Of course it will still error if the *wrong* key is on file.
-  if (gmap_get_key() == '') {
-    return t('Unable to render map: Google Maps API key is missing.');
-  }
-
   // Track the mapids we've used already.
   static $mapids = array();
 
@@ -1158,8 +1152,7 @@ function gmap_decimal($num) {
  *  for a description of the possible status codes.
  */
 function gmap_geocode($address, $tld = 'com') {
-  $key = gmap_get_key();
-  $data = drupal_http_request('http://maps.google.' . $tld . '/maps/geo?q=' . drupal_urlencode($address) . '&output=csv&key=' . $key);
+  $data = drupal_http_request('http://maps.google.' . $tld . '/maps/geo?q=' . drupal_urlencode($address) . '&output=csv');
   if ($data->code == 200) {
     $r = explode(',', $data->data);
     return array(
@@ -1281,20 +1274,6 @@ function gmap_keys_service() {
       );
     }
   }
-}
-
-/**
- * Retrieve the Google Maps key that is in use for the site.
- */
-function gmap_get_key() {
-  $key = variable_get('googlemap_api_key', '');
-  if (module_exists('keys_api')) {
-    $key = keys_api_get_key('gmap', $_SERVER['HTTP_HOST']);
-  }
-  elseif (module_exists('keys')) {
-    $key = keys_get_key('google_maps');
-  }
-  return $key;
 }
 
 /**
