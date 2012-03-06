@@ -67,14 +67,13 @@ Drupal.gmap.addHandler('gmap', function (elem) {
     if (infowindow != null){
       infowindow.close();
     }
-    infowindow = new google.maps.InfoWindow({
-      content: marker.text
-    });
+    infowindow = new google.maps.InfoWindow();
     if (marker.text) {
+	  infowindow.setContent(marker.text);
       infowindow.open(obj.map, marker.marker);
     }
     // Info Window Query / Info Window Offset
-    if (marker.iwq || (obj.vars.iwq && typeof marker.iwo != 'undefined')) {
+    else if (marker.iwq || (obj.vars.iwq && typeof marker.iwo != 'undefined')) {
       var iwq, iwo;
       if (obj.vars.iwq) {
         iwq = obj.vars.iwq;
@@ -90,10 +89,11 @@ Drupal.gmap.addHandler('gmap', function (elem) {
       var el = document.createElement('div');
       // Clone the matched object, run through the clone, stripping off ids, and move the clone into the container.
       jQuery(iwq).eq(iwo).clone(false).find('*').removeAttr('id').appendTo(jQuery(el));
-      marker.marker.openInfoWindow(el);
+	  marker.setContent(el);
+      infowindow.open(obj.map, marker.marker);
     }
     // AJAX content
-    if (marker.rmt) {
+    else if (marker.rmt) {
       var uri = marker.rmt;
       // If there was a callback, prefix that.
       // (If there wasn't, marker.rmt was the FULL path.)
@@ -108,18 +108,19 @@ Drupal.gmap.addHandler('gmap', function (elem) {
       //  marker.marker.openInfoWindowHtml(Drupal.settings.loadingImage);
       //}
       jQuery.get(uri, {}, function (data) {
-        marker.marker.openInfoWindowHtml(data);
+		infowindow.setContent(data);
+        infowindow.open(obj.map, marker.marker);
       });
     }
     // Tabbed content
     else if (marker.tabs) {
-      var infoWinTabs = [];
+      var data = "";
+      //tabs in an infowindow is no longer supported in API ver3.  
       for (var m in marker.tabs) {
-        if (marker.tabs.hasOwnProperty(m)) {
-          infoWinTabs.push(new GInfoWindowTab(m, marker.tabs[m]));
-        }
+        data += marker.tabs[m];
       }
-      marker.marker.openInfoWindowTabsHtml(infoWinTabs);
+	  infowindow.setContent(data);
+      infowindow.open(obj.map, marker.marker);
     }
     // No content -- marker is a link
     else if (marker.link) {
