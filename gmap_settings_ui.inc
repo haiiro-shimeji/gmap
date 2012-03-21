@@ -17,8 +17,8 @@ function gmap_admin_settings($form, &$form_state) {
     '#title' => t('Google Map Initialize'),
   );
 
-  if (variable_get('file_downloads', FILE_DOWNLOADS_PUBLIC) != FILE_DOWNLOADS_PUBLIC) {
-    $form['initialization']['gmap_private_markerfile'] = array(
+if (file_default_scheme() != 'public') {
+  $form['initialization']['gmap_private_markerfile'] = array(
       '#type' => 'textfield',
       '#title' => t('Path to gmap_markers.js'),
       '#description' => t('You are using the <em>Private</em> download method. For markers to work properly. you must press the <em>Regenerate</em> button, manually copy js/gmap_markers.js from the files directory to a location accessible by the webserver, and enter the file path relative to the Drupal root (including the filename) in this field. Example: <em>sites/default/misc/gmap_markers.js</em>'),
