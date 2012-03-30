@@ -283,6 +283,14 @@ class gmap_plugin_style_gmap extends views_plugin_style {
     foreach ($fields as $id => $handler) {
       $field_options[$id] = $handler->ui_name(FALSE);
     }
+	
+	$image_field_options = array();
+	foreach ( $fields as $id => $handler ) {
+	  if ( "image" == $handler->field_info["type"] )
+		$image_field_options[$id] = $handler->ui_name(FALSE);
+	}
+	
+	$image_taxonomy_options = array();
 
     $argument_options = array();
     $arguments = $this->display->handler->get_handlers('argument');
@@ -339,6 +347,8 @@ class gmap_plugin_style_gmap extends views_plugin_style {
         'userrole' => t('By user role (for user views)'),
         'field' => t('Use marker field'),
         'static' => t('Use single marker type'),
+        'term-image' => t('By term with image (for node views)'),
+        'image' => t('Use image field'),
       ),
       '#default_value' => $this->options['markers'],
     );
@@ -351,6 +361,26 @@ class gmap_plugin_style_gmap extends views_plugin_style {
       '#default_value' => $this->options['markerfield'],
       '#process' => array('ctools_dependent_process'),
       '#dependency' => array('edit-style-options-markers' => array('field')),
+    );
+
+    $form['imagefield'] = array(
+      '#type' => 'select',
+      '#title' => t('Image field'),
+      '#description' => t('You can use a views field to set the image for the markers.'),
+      '#options' => $image_field_options,
+      '#default_value' => $this->options['imagefield'],
+      '#process' => array('ctools_dependent_process'),
+      '#dependency' => array('edit-style-options-markers' => array('image')),
+    );
+
+    $form['taxonomyfield'] = array(
+      '#type' => 'select',
+      '#title' => t('Taxonomy with image'),
+      '#description' => t('You can use an image field in taxonomy setting for the markers. To bind image fields to taxonomy, setup in <a href="'.url('admin/structure/taxonomy').'">taxonomy field settings</a>.'),
+      '#options' => $image_taxonomy_options,
+      '#default_value' => $this->options['taxonomyfield'],
+      '#process' => array('ctools_dependent_process'),
+      '#dependency' => array('edit-style-options-markers' => array('term-image')),
     );
 
     $form['enablermt'] = array(
