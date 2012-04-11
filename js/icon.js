@@ -16,7 +16,7 @@ Drupal.gmap.getIcon = function (setname, sequence) {
   var othimg = ['printImage', 'mozPrintImage', 'printShadow', 'transparent'];
   // If no setname, return google's default icon.
   if (!setname) {
-    return;
+    return null;
   }
   if (!this.gicons) {
     this.gicons = {};

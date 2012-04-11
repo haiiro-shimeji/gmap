@@ -120,6 +120,12 @@ class gmap_plugin_style_gmap extends views_plugin_style {
       $marker_field = $marker_field_obj->field_alias;
     }
     
+   // Determine fieldname for marker field.
+    if ($this->options['markers'] == 'image') {
+      $image_field_obj = $this->view->display_handler->get_handler('field', $this->options['imagefield']);
+      $image_field = 'field_'.$image_field_obj->field;
+    }
+	
     // Determine rmt field.
     if ($this->options['enablermt']) {
       $rmt_field_obj = $this->view->display_handler->get_handler('field', $this->options['rmtfield']);
@@ -201,7 +207,12 @@ class gmap_plugin_style_gmap extends views_plugin_style {
             if (!empty($row->{$marker_field})) {
               $markername = $row->{$marker_field};
             }
-          }
+          } 
+		  elseif ($this->options['markers'] == 'image') {
+            if (!empty($row->{$image_field})) {
+              $markername = file_create_url( $row->{$image_field}[0]['raw']['uri'] );
+            }
+          } 
           if (!isset($offsets[$markername])) {
             $offsets[$markername] = 0;
           }
@@ -289,6 +300,7 @@ class gmap_plugin_style_gmap extends views_plugin_style {
 	  if ( "image" == $handler->field_info["type"] )
 		$image_field_options[$id] = $handler->ui_name(FALSE);
 	}
+	if ( 0 == count( $image_field_options ) ) $image_field_options[] = "-- No image field --";
 	
 	$image_taxonomy_options = array();
 
