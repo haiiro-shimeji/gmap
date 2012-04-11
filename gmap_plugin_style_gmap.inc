@@ -121,7 +121,7 @@ class gmap_plugin_style_gmap extends views_plugin_style {
     }
     
    // Determine fieldname for marker field.
-    if ($this->options['markers'] == 'image') {
+    if ($this->options['markers'] == 'imagefield') {
       $image_field_obj = $this->view->display_handler->get_handler('field', $this->options['imagefield']);
       $image_field = 'field_'.$image_field_obj->field;
     }
@@ -208,7 +208,7 @@ class gmap_plugin_style_gmap extends views_plugin_style {
               $markername = $row->{$marker_field};
             }
           } 
-		  elseif ($this->options['markers'] == 'image') {
+		  elseif ($this->options['markers'] == 'imagefield') {
             if (!empty($row->{$image_field})) {
               $markername = file_create_url( $row->{$image_field}[0]['raw']['uri'] );
             }
@@ -360,7 +360,7 @@ class gmap_plugin_style_gmap extends views_plugin_style {
         'field' => t('Use marker field'),
         'static' => t('Use single marker type'),
         'term-image' => t('By term with image (for node views)'),
-        'image' => t('Use image field'),
+        'imagefield' => t('Use image field'),
       ),
       '#default_value' => $this->options['markers'],
     );
@@ -382,7 +382,7 @@ class gmap_plugin_style_gmap extends views_plugin_style {
       '#options' => $image_field_options,
       '#default_value' => $this->options['imagefield'],
       '#process' => array('ctools_dependent_process'),
-      '#dependency' => array('edit-style-options-markers' => array('image')),
+      '#dependency' => array('edit-style-options-markers' => array('imagefield')),
     );
 
     $form['taxonomyfield'] = array(
