@@ -39,52 +39,44 @@ Drupal.gmap.getIcon = function (setname, sequence) {
   }
 
   if (!this.gicons[setname]) {
-    if (!Drupal.gmap.icons[setname]) {
-      alert('Request for invalid marker set ' + setname + '!');
-    }
+    
     this.gicons[setname] = [];
     this.gshadows[setname] = [];
-    var q = Drupal.gmap.icons[setname];
-    var p, t;
-    for (var i = 0; i < q.sequence.length; i++) {
-      /*
-      t = new GIcon();
-      p = Drupal.gmap.iconpath + q.path;
-      t.image = p + q.sequence[i].f;
-      if (q.shadow.f !== '') {
-        t.shadow = p + q.shadow.f;
-        t.shadowSize = new GSize(q.shadow.w, q.shadow.h);
-      }
-      t.iconSize = new GSize(q.sequence[i].w, q.sequence[i].h);
-      t.iconAnchor = new GPoint(q.anchorX, q.anchorY);
-      t.infoWindowAnchor = new GPoint(q.infoX, q.infoY);
-      */
-      p = Drupal.gmap.iconpath + q.path;
-      t = new google.maps.MarkerImage(p + q.sequence[i].f,
-        new google.maps.Size(q.sequence[i].w, q.sequence[i].h),
-        null,
-        new google.maps.Point(q.anchorX, q.anchorY)
-      );
-      if (q.shadow.f !== '') {
-        this.gshadows[setname][i] = new google.maps.MarkerImage(p + q.shadow.f,
-          new google.maps.Size(q.shadow.w, q.shadow.h),
+    
+    if (Drupal.gmap.icons[setname]) {
+      var q = Drupal.gmap.icons[setname];
+      var p, t;
+      for (var i = 0; i < q.sequence.length; i++) {
+        p = Drupal.gmap.iconpath + q.path;
+        t = new google.maps.MarkerImage(p + q.sequence[i].f,
+          new google.maps.Size(q.sequence[i].w, q.sequence[i].h),
           null,
           new google.maps.Point(q.anchorX, q.anchorY)
-        );
-      }
-      else {
-        this.gshadows[setname][i] = null;
-      }
-      
-      for (var j = 0; j < othimg.length; j++) {
-        if (q[othimg[j]] !== '') {
-          t[othimg[j]] = p + q[othimg[j]];
+          );
+        if (q.shadow.f !== '') {
+          this.gshadows[setname][i] = new google.maps.MarkerImage(p + q.shadow.f,
+            new google.maps.Size(q.shadow.w, q.shadow.h),
+            null,
+            new google.maps.Point(q.anchorX, q.anchorY)
+            );
         }
+        else {
+          this.gshadows[setname][i] = null;
+        }
+
+        for (var j = 0; j < othimg.length; j++) {
+          if (q[othimg[j]] !== '') {
+            t[othimg[j]] = p + q[othimg[j]];
+          }
+        }
+        // @@@ imageMap?
+        this.gicons[setname][i] = t;
       }
-      // @@@ imageMap?
-      this.gicons[setname][i] = t;
+      delete Drupal.gmap.icons[setname];
+    } else {
+        t = new google.maps.MarkerImage( setname );
+        this.gicons[setname][0] = t;
     }
-    delete Drupal.gmap.icons[setname];
   }
   // TODO: Random, other cycle methods.
   return this.gicons[setname][sequence % this.gicons[setname].length];
