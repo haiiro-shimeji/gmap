@@ -473,3 +473,11 @@ class gmap_plugin_style_gmap extends views_plugin_style {
     }
   }
 }
+
+function gmap_views_ajax_data_alter(&$commands, $view) {
+	
+	foreach ( $commands as &$c ) {
+		if ( 'insert' == $c['command'] ) $c['command'] = "gmapRepaint";
+	}
+			
+}
