@@ -310,8 +310,6 @@ function _gmap_base_js() {
     'weight' => 2,
   );
 
-  $ret[$path . '/js/gmap_view.js'] = array('weight' => 3);
-  
   return $ret;
 }
 

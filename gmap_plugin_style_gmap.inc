@@ -474,36 +474,64 @@ class gmap_plugin_style_gmap extends views_plugin_style {
   }
 }
 
+/**
+ * Implementation of hook_views_ajax_data_alter().
+ */
 function gmap_views_ajax_data_alter(&$commands, $view) {
-	
-	foreach ( $commands as &$c ) {
-		if ( 'insert' == $c['command'] ) $c['command'] = "gmapRepaint";
-	}
-	
+  
+  $plugin_styles = array ($view->plugin_name);
+  foreach ($view->display as $display)
+    $plugin_styles[] = $display->display_options['style_plugin'];
+  if (! (in_array ('gmap', $plugin_styles) || in_array ('gmap', $plugin_styles)))
+    return;
+
+  foreach ($commands as &$c) {
+    if ('insert' == $c['command'])
+      $c['command'] = "gmapRepaint";
+  }
+  
 }
 
-function gmap_ajax_render_alter( &$command ) {
-	
-	$hasGmapRepaint = false;
-	foreach ( $command as $c ) {
-		if ( 'gmapRepaint' == $c['command'] ) {
-			$hasGmapRepaint = true;
-			break;
-		}
-	}
-	
-	if ( $hasGmapRepaint ) {
-		
-		$settings;
-		foreach ( $command as $c ) {
-			if ( 'settings' == $c['command'] ) {
-				$settings = $c['settings'];
-				break;
-			}
-		}
-		
-		$mapids = array_keys( $settings['gmap'] );
-		array_splice( $command, 0, 0, array( array( 'command' => 'gmapClearMarker', 'mapid' => $mapids ) ) );
-	}
-	
+/**
+ * Implementation of hook_views_pre_render().
+ */
+function gmap_views_pre_render(&$view) {
+  
+  static $gmap_processed;
+  // Add js only for gmap style views with ajax and not already processed.
+  if (($view->plugin_name != 'gmap' && $view->plugin_name != 'gmapextended')
+          || !$view->use_ajax || $gmap_processed) {
+    return;
+  }
+  // Mark the view as already processed.
+  $gmap_processed = TRUE;
+  // Add js with new views callback.
+  drupal_add_js(drupal_get_path('module', 'gmap') . '/js/gmap_views_ajax.js', array('group' => JS_DEFAULT));
+  
+}
+
+function gmap_ajax_render_alter(&$command) {
+  
+  $hasGmapRepaint = false;
+  foreach ($command as $c) {
+    if ('gmapRepaint' == $c['command']) {
+      $hasGmapRepaint = true;
+      break;
+    }
+  }
+
+  if ($hasGmapRepaint) {
+
+    $settings;
+    foreach ($command as $c) {
+      if ('settings' == $c['command']) {
+        $settings = $c['settings'];
+        break;
+      }
+    }
+
+    $mapids = array_keys($settings['gmap']);
+    array_splice($command, 0, 0, array(array('command' => 'gmapClearMarker', 'mapid' => $mapids)));
+  }
+  
 }
