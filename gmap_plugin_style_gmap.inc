@@ -479,5 +479,31 @@ function gmap_views_ajax_data_alter(&$commands, $view) {
 	foreach ( $commands as &$c ) {
 		if ( 'insert' == $c['command'] ) $c['command'] = "gmapRepaint";
 	}
-			
+	
+}
+
+function gmap_ajax_render_alter( &$command ) {
+	
+	$hasGmapRepaint = false;
+	foreach ( $command as $c ) {
+		if ( 'gmapRepaint' == $c['command'] ) {
+			$hasGmapRepaint = true;
+			break;
+		}
+	}
+	
+	if ( $hasGmapRepaint ) {
+		
+		$settings;
+		foreach ( $command as $c ) {
+			if ( 'settings' == $c['command'] ) {
+				$settings = $c['settings'];
+				break;
+			}
+		}
+		
+		$mapids = array_keys( $settings['gmap'] );
+		array_splice( $command, 0, 0, array( array( 'command' => 'gmapClearMarker', 'mapid' => $mapids ) ) );
+	}
+	
 }
