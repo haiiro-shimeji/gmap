@@ -1140,7 +1140,7 @@ function gmap_decimal($num) {
  */
 function gmap_geocode($address, $tld = 'com') {
   $key = gmap_get_key();
-  $data = drupal_http_request('http://maps.google.' . $tld . '/maps/geo?q=' . drupal_urlencode($address) . '&output=csv&key=' . $key);
+  $data = drupal_http_request('http://maps.google.' . $tld . '/maps/geo?q=' . urlencode($address) . '&output=csv&key=' . $key);
   if ($data->code == 200) {
     $r = explode(',', $data->data);
     return array(
