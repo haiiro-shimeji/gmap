@@ -300,7 +300,7 @@ function _gmap_base_js() {
     'key' => gmap_get_key(),
     'hl' => $language->language,
   );
-  $ret[url('http://maps.google.com/maps', array('query' => $query))] = array(
+  $ret[url(gmap_views_protocol() . '://maps.google.com/maps', array('query' => $query))] = array(
     'type' => 'external',
   );
 
@@ -1140,7 +1140,7 @@ function gmap_decimal($num) {
  */
 function gmap_geocode($address, $tld = 'com') {
   $key = gmap_get_key();
-  $data = drupal_http_request('http://maps.google.' . $tld . '/maps/geo?q=' . urlencode($address) . '&output=csv&key=' . $key);
+  $data = drupal_http_request(gmap_views_protocol() . '://maps.google.' . $tld . '/maps/geo?q=' . urlencode($address) . '&output=csv&key=' . $key);
   if ($data->code == 200) {
     $r = explode(',', $data->data);
     return array(
@@ -1399,4 +1399,11 @@ function template_preprocess_gmap_view_gmap(&$vars) {
   );
   // Theme the map.
   $vars['map'] = drupal_render($vars['map_element']);
+}
+
+/**
+ * Determine the site protocol (http or https)
+ */
+function gmap_views_protocol() {
+  return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : 'http';
 }
