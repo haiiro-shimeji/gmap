@@ -300,7 +300,7 @@ function _gmap_base_js() {
     'language' => $language->language,
     'sensor' => 'false',
   );
-  $ret[url('http://maps.google.com/maps/'.$file, array('query' => $query))] = array(
+  $ret[url(gmap_views_protocol() . '://maps.google.com/maps/'.$file, array('query' => $query))] = array(
     'type' => 'external',
     'weight' => 2
   );
@@ -1155,7 +1155,7 @@ function gmap_decimal($num) {
  */
 function gmap_geocode($address, $tld = 'com') {
   $key = gmap_get_key();
-  $data = drupal_http_request('http://maps.google.' . $tld . '/maps/geo?q=' . drupal_urlencode($address) . '&output=csv&key=' . $key);
+  $data = drupal_http_request(gmap_views_protocol() . '://maps.google.' . $tld . '/maps/geo?q=' . urlencode($address) . '&output=csv&key=' . $key);
   if ($data->code == 200) {
     $r = explode(',', $data->data);
     return array(
@@ -1325,6 +1325,47 @@ function gmap_views_plugins() {
   );
 }
 
+/**
+ * Implementation of hook_views_pre_render().
+ */
+function gmap_views_pre_render(&$view) {
+  static $gmap_processed;
+  // Add js only for gmap style views with ajax and not already processed.
+  if (($view->plugin_name != 'gmap' && $view->plugin_name != 'gmapextended')
+    || !$view->use_ajax || $gmap_processed) {
+    return;
+  }
+  // Mark the view as already processed.
+  $gmap_processed = TRUE;
+  // Add js with new views callback.
+  drupal_add_js(drupal_get_path('module', 'gmap') . '/js/gmap_views_ajax.js', array('group' => JS_DEFAULT));
+}
+
+/**
+ * Implementation of hook_views_ajax_data_alter().
+ */
+function gmap_views_ajax_data_alter(&$commands, $view) {
+  // Add js callback only with gmap style plugins and with ajax.
+  $plugin_styles = array ($view->plugin_name);
+  foreach ($view->display as $display)
+    $plugin_styles[] = $display->display_options['style_plugin'];
+  if (! (in_array ('gmap', $plugin_styles) || in_array ('gmap', $plugin_styles)))
+    return;
+
+  // Find the JQuery selector for the view's wrapper in the DOM
+  $target = '';
+  foreach ($commands as $command) {
+    if ($command['command'] == 'insert') {
+      $target = $command['selector'];
+    }
+  }
+  $command = array('command' => 'gmapAjaxViewsFix', 'target' => $target);
+  // Save settings.
+  $js = drupal_add_js(NULL, array('scope' => 'header'));
+  $command['settings'] = $js['settings']['data'];
+  $commands[] = $command;
+}
+
 function theme_gmap_views_ui_gmapextended($variables) {
   $form = $variables['form'];
 
@@ -1373,4 +1414,11 @@ function template_preprocess_gmap_view_gmap(&$vars) {
   );
   // Theme the map.
   $vars['map'] = drupal_render($vars['map_element']);
+}
+
+/**
+ * Determine the site protocol (http or https)
+ */
+function gmap_views_protocol() {
+  return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : 'http';
 }
