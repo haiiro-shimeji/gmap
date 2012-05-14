@@ -351,7 +351,6 @@ if (file_default_scheme() != 'public') {
     '#required' => TRUE,
     '#options' => array(
       'gmap' => t('No manager (use GMap API directly)'),
-      'gmarkermanager' => t("Google's GMarkerManager"),
       'markermanager' => t('GMaps Utility Library MarkerManager'),
       'markerclusterer' => t('GMaps Utility Library MarkerClusterer'),
       'clusterer' => t("Jef Poskanzer's Clusterer"),
@@ -368,57 +367,6 @@ if (file_default_scheme() != 'public') {
     '#description' => t('There are no settings for unmanaged markers.'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
-  );
-
-  // Google Maps API GMarkerManager
-  $form['gmap_markermanager']['gmarkermanager'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('GMarkerManager settings'),
-    '#description' => t('GMarkerManager is a new part of the official Google Maps API that provides a marker manager.'),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-  );
-  $form['gmap_markermanager']['gmarkermanager']['borderPadding'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Border padding'),
-    '#description' => t('Markers located less than this number of pixels from the viewport will be added to the map by the manager (even if they would be fully invisible.)'),
-    '#size' => 4,
-    '#maxlength' => 4,
-    '#default_value' => $opts['gmarkermanager']['borderPadding'],
-  );
-  $form['gmap_markermanager']['gmarkermanager']['maxZoom'] = array(
-    '#type' => 'select',
-    '#title' => t('Maximum zoom'),
-    '#options' => drupal_map_assoc(range(0, 17)),
-    '#description' => t('At the specified zoom level and above, the marker manager will disable itself for additional speed.'),
-    '#default_value' => $opts['gmarkermanager']['maxZoom'],
-  );
-  $form['gmap_markermanager']['gmarkermanager']['trackMarkers'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Track markers'),
-    '#description' => t('If enabled, the marker manager will track marker movements. Leave off unless you need to move markers around with setPoint.'),
-    '#default_value' => $opts['gmarkermanager']['trackMarkers'],
-  );
-  $form['gmap_markermanager']['gmarkermanager']['defaults'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Marker defaults'),
-    '#description' => t('Default marker-specific settings for GMarkerManager. Markers will appear when the current zoom level is between minZoom and maxZoom.'),
-  );
-  $form['gmap_markermanager']['gmarkermanager']['defaults']['markerMinZoom'] = array(
-    '#type' => 'select',
-    '#title' => t('Minimum zoom'),
-    '#options' => drupal_map_assoc(range(0, 17)),
-    '#description' => t('At the specified zoom level and above (i.e. zooming in,) the marker will be shown. Choose 0 to show markers at all zoom levels by default.'),
-    '#default_value' => $opts['gmarkermanager']['markerMinZoom'],
-    '#parents' => array('gmap_markermanager', 'gmarkermanager', 'markerMinZoom'),
-  );
-  $form['gmap_markermanager']['gmarkermanager']['defaults']['markerMaxZoom'] = array(
-    '#type' => 'select',
-    '#title' => t('Maximum zoom'),
-    '#options' => drupal_map_assoc(range(0, 17)),
-    '#description' => t('At the specified zoom level and above (i.e. zooming in,) the marker will be hidden. Choose 0 to disable by default.'),
-    '#default_value' => $opts['gmarkermanager']['markerMaxZoom'],
-    '#parents' => array('gmap_markermanager', 'gmarkermanager', 'markerMaxZoom'),
   );
 
   // GMaps Utility Library -- MarkerManager
