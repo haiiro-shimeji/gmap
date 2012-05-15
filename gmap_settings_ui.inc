@@ -373,7 +373,7 @@ if (file_default_scheme() != 'public') {
   $form['gmap_markermanager']['markermanager'] = array(
     '#type' => 'fieldset',
     '#title' => t('MarkerManager settings'),
-    '#description' => t('MarkerManager is the improved open source version of GMarkerManager. To use, you must download it from <a href="@url">here</a> and place it in the <em>thirdparty</em> folder.', array('@url' => 'http://gmaps-utility-library.googlecode.com/svn/trunk/markermanager/release/src/')),
+    '#description' => t('MarkerManager is the improved open source version of GMarkerManager. To use, you must download it from <a href="@url">here</a> and place it in the <em>thirdparty</em> folder.', array('@url' => 'http://google-maps-utility-library-v3.googlecode.com/svn/tags/markermanager/1.0/src/')),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
   );
@@ -431,7 +431,7 @@ if (file_default_scheme() != 'public') {
   $form['gmap_markermanager']['markerclusterer'] = array(
     '#type' => 'fieldset',
     '#title' => t('MarkerClusterer settings'),
-    '#description' => t('MarkerClusterer creates and manages per-zoom-level clusters for large amounts of markers (hundreds or thousands.) To use, you must download it from <a href="@url">here</a> and place it in the <em>thirdparty</em> folder.', array('@url' => 'http://gmaps-utility-library-dev.googlecode.com/svn/tags/markerclusterer/1.0/src/')),
+    '#description' => t('MarkerClusterer creates and manages per-zoom-level clusters for large amounts of markers (hundreds or thousands.) To use, you must download it from <a href="@url">here</a> and place it in the <em>thirdparty</em> folder.', array('@url' => 'http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerclusterer/1.0/src/')),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
   );
