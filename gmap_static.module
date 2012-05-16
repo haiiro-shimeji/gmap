@@ -55,17 +55,15 @@ function theme_gmap_static($variables) {
     }
   }
   
-  return '<div class="gmap-static-image" style="width: '.$settings['width'].'; height: '.$settings['height'].';'
-          . 'background-image: url(' 
+  return '<div class="gmap-static-image">'
+          . '<img alt="map" src="'
           . 'http://maps.google.com/maps/api/staticmap?center=' . $settings['latitude'] . ',' . $settings['longitude']
           . '&zoom='.$settings['zoom']
           . '&size='.preg_replace( '/px$/', '', $settings['width'] ).'x'.preg_replace( '/px$/', '', $settings['height'] )
           . '&maptype=roadmap'
           . ( 0 < count( $markerStrings ) ? '&markers='.implode( '|', $markerStrings ) : '' )
-          . '&sensor=false'          . ');'
-          . 'background-position: center center;'
-          . 'background-repeat: no-repeat;'
-          . '">'
+          . '&sensor=false'
+          . '" >'
           . '</div>';
 
 }
