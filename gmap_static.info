@@ -1,0 +1,7 @@
+name = GMap Static
+description = Alter google map elements to static map image.
+package = Location
+core = 7.x
+configure = admin/config/services/gmap_static
+files[] = gmap_static.module
+dependencies[] = gmap
