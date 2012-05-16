@@ -55,7 +55,7 @@ function theme_gmap_static($variables) {
     }
   }
   
-  return '<div style="width: '.$settings['width'].'; height: '.$settings['height'].';'
+  return '<div class="gmap-static-image" style="width: '.$settings['width'].'; height: '.$settings['height'].';'
           . 'background-image: url(' 
           . 'http://maps.google.com/maps/api/staticmap?center=' . $settings['latitude'] . ',' . $settings['longitude']
           . '&zoom='.$settings['zoom']
