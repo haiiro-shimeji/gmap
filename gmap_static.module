@@ -80,10 +80,10 @@ function _gmap_static_pre_render( $element ) {
   
   // Match path if necessary.
   if ($pages) {
-    // Convert path to lowercase. This allows comparison of the same path
-    // with different case. Ex: /Page, /page, /PAGE.
-    $pages = drupal_strtolower($pages);
     if ($visibility < GMAP_STATIC_PATH_PHP) {
+      // Convert path to lowercase. This allows comparison of the same path
+      // with different case. Ex: /Page, /page, /PAGE.
+      $pages = drupal_strtolower($pages);
       // Convert the Drupal path to lowercase
       $path = drupal_strtolower(drupal_get_path_alias($_GET['q']));
       // Compare the lowercase internal and lowercase path alias (if any).
