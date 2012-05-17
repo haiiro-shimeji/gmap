@@ -77,33 +77,28 @@ function _gmap_static_pre_render( $element ) {
   $visibility = variable_get('gmap_static_visibility', GMAP_STATIC_PATH_NOTLISTED);
   
   // Match path if necessary.
-  if ($pages) {
-    if ($visibility < GMAP_STATIC_PATH_PHP) {
-      // Convert path to lowercase. This allows comparison of the same path
-      // with different case. Ex: /Page, /page, /PAGE.
-      $pages = drupal_strtolower($pages);
-      // Convert the Drupal path to lowercase
-      $path = drupal_strtolower(drupal_get_path_alias($_GET['q']));
-      // Compare the lowercase internal and lowercase path alias (if any).
-      $page_match = drupal_match_path($path, $pages);
-      if ($path != $_GET['q']) {
-        $page_match = $page_match || drupal_match_path($_GET['q'], $pages);
-      }
-      // When $block->visibility has a value of 0 (GMAP_STATIC_PATH_NOTLISTED),
-      // the block is displayed on all pages except those listed in $block->pages.
-      // When set to 1 (GMAP_STATIC_PATH_LISTED), it is displayed only on those
-      // pages listed in $block->pages.
-      $page_match = !($visibility xor $page_match);
+  if ($visibility < GMAP_STATIC_PATH_PHP) {
+    // Convert path to lowercase. This allows comparison of the same path
+    // with different case. Ex: /Page, /page, /PAGE.
+    $pages = drupal_strtolower($pages);
+    // Convert the Drupal path to lowercase
+    $path = drupal_strtolower(drupal_get_path_alias($_GET['q']));
+    // Compare the lowercase internal and lowercase path alias (if any).
+    $page_match = drupal_match_path($path, $pages);
+    if ($path != $_GET['q']) {
+      $page_match = $page_match || drupal_match_path($_GET['q'], $pages);
     }
-    elseif (module_exists('php')) {
-      $page_match = php_eval($pages);
-    }
-    else {
-      $page_match = FALSE;
-    }
+    // When $block->visibility has a value of 0 (GMAP_STATIC_PATH_NOTLISTED),
+    // the block is displayed on all pages except those listed in $block->pages.
+    // When set to 1 (GMAP_STATIC_PATH_LISTED), it is displayed only on those
+    // pages listed in $block->pages.
+    $page_match = !($visibility xor $page_match);
+  }
+  elseif (module_exists('php')) {
+    $page_match = php_eval($pages);
   }
   else {
-    $page_match = TRUE;
+    $page_match = FALSE;
   }
   
   if ( $page_match ) $element['#theme'] = 'gmap_static';
