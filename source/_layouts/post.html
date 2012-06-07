@@ -3,7 +3,7 @@ layout: default
 single: true
 ---
 
-<div>
+<section>
 <article class="hentry" role="article">
   {% include article.html %}
   <footer>
@@ -31,7 +31,7 @@ single: true
     <div id="disqus_thread" aria-live="polite">{% include post/disqus_thread.html %}</div>
   </section>
 {% endif %}
-</div>
+</section>
 {% unless page.sidebar == false %}
 <aside class="sidebar">
   {% if site.post_asides.size %}
