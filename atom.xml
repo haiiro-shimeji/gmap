@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[My Octopress Blog]]></title>
+  <link href="http://haiiro-shimeji.github.com/gmap/atom.xml" rel="self"/>
+  <link href="http://haiiro-shimeji.github.com/gmap/"/>
+  <updated>2012-06-07T17:02:15+09:00</updated>
+  <id>http://haiiro-shimeji.github.com/gmap/</id>
+  <author>
+    <name><![CDATA[Your Name]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+</feed>
