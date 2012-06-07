@@ -3,9 +3,9 @@
 # ----------------------- #
 
 url: http://haiiro-shimeji.github.com/gmap
-title: My Octopress Blog
-subtitle: A blogging framework for hackers.
-author: Your Name
+title: Gmap
+subtitle: gmap is a drupal module to display google maps on site.
+author: haiiro-shimeji
 simple_search: http://google.com/search
 description:
 
