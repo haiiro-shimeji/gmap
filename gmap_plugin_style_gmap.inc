@@ -38,7 +38,7 @@ class gmap_plugin_style_gmap extends views_plugin_style {
 
     $options['center_on_nodearg'] = array('default' => 0);
     $options['center_on_nodearg_arg'] = array('default' => '');
-    
+
     $options['center_on_proximityarg'] = array('default' => 0);
 
     $options['highlight_nodearg'] = array('default' => 0);
@@ -460,7 +460,7 @@ class gmap_plugin_style_gmap extends views_plugin_style {
       '#process' => array('ctools_dependent_process'),
       '#dependency' => array('edit-style-options-center-on-nodearg' => array(TRUE)),
     );
-    
+
     if (module_exists('location')) {
       $form['center_on_proximityarg'] = array(
         '#type' => 'checkbox',
