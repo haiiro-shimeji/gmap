@@ -15,6 +15,13 @@ function theme_gmap_views_view_gmapextended(&$vars) {
   }
   // @@@ Move to preprocess
   $map = gmap_parse_macro($vars['options']['macro']);
+
+  // If center lon/lat are not empty they are used to center map
+  if (!empty($vars['center']['longitude']) && !empty($vars['center']['latitude'])) {
+    $map['longitude'] = $vars['center']['longitude'];
+    $map['latitude'] = $vars['center']['latitude'];
+  }
+
   if (!empty($vars['options']['iwq'])) {
     $map['iwq'] = $vars['options']['iwq'];
   }
@@ -41,6 +48,13 @@ function template_preprocess_gmap_views_view_gmapextended(&$vars) {
   $handler  = $view->style_plugin;
 
   $fields   = &$view->field;
+
+  if ($view->style_plugin->options['center_on_proximityfilter'] && $view->style_plugin->options['datasource'] == 'location' && module_exists('location')) {
+    $vars['center'] = location_views_proximity_get_reference_location($view, array(
+			'origin' => 'tied',
+      'relationship' => $view->style_plugin->options['center_on_proximityfilter_rel'])
+    );
+  }
 
   // Render fields.
   $renders = $handler->render_fields($result);
