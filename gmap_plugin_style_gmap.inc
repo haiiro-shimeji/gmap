@@ -242,7 +242,7 @@ class gmap_plugin_style_gmap extends views_plugin_style {
             }
           }
           elseif ($this->options['markers'] == 'field') {
-          	
+
             if (!empty($row->{$marker_field})) {
               $markername = $row->{$marker_field}[0]['raw']['value'];
             }
