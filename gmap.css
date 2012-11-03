@@ -61,3 +61,7 @@
   color: grey;
 }
 
+/* IE and FF will display the map as a grey box if max-width is set to 100% for img tag within .gmap. */
+.gmap img {
+  max-width: none #important;
+}
