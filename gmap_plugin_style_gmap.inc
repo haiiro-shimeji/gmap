@@ -102,7 +102,7 @@ class gmap_plugin_style_gmap extends views_plugin_style {
     else if ($this->options['datasource'] == 'geofield') {
       $lat_field = 'lat';
       $lon_field = 'lon';
-    }   
+    }
     // Determine fieldname for latitude and longitude fields.
     else if ($this->options['datasource'] == 'fields') {
       $lat_field_obj = $this->view->display_handler->get_handler('field', $this->options['latfield']);
@@ -191,7 +191,7 @@ class gmap_plugin_style_gmap extends views_plugin_style {
         }
         else if ($this->options['datasource'] == 'fields') {
           $custom_field_latname = 'field_' . $lat_field;
-          $custom_field_lonname = 'field_' . $lon_field; 
+          $custom_field_lonname = 'field_' . $lon_field;
           $custom_field_lat = isset($row->{$custom_field_latname}[0]['raw']) ? $row->{$custom_field_latname}[0]['raw'] : NULL;
           $custom_field_lon = isset($row->{$custom_field_lonname}[0]['raw']) ? $row->{$custom_field_lonname}[0]['raw'] : NULL;
           if ($custom_field_lat && $custom_field_lon) {
