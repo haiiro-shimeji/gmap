@@ -127,7 +127,7 @@ function gmap_gmap($op, &$map) {
         if (function_exists('_gmap_markermanager_override')) {
           _gmap_markermanager_override($mm);
         }
-        
+
       }
 
       // add required base js
@@ -138,9 +138,9 @@ function gmap_gmap($op, &$map) {
       drupal_add_js($path . 'highlight.js');
       drupal_add_js(variable_get('file_public_path', conf_path() . '/files')  . '/js/gmap_markers.js');
       drupal_add_js($path . 'gmap_marker.js');
-      drupal_add_js($path . 'poly.js');  
-    
-      
+      drupal_add_js($path . 'poly.js');
+
+
       //$path = drupal_get_path('module', 'gmap') . '/js';
       if (isset($map['behavior']['locpick']) && $map['behavior']['locpick']) {
         drupal_add_js($path . 'locpick.js');
