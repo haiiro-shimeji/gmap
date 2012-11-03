@@ -133,6 +133,18 @@ class gmap_plugin_style_gmapextended extends views_plugin_style {
       '#markup' => '<div class="description form-item">' . t('Assign purposes to fields you are using to supply map data. NOTE: This style is under heavy development currently, no backwards compatibility is guaranteed!') . '</div>',
     );
 
+    $form['datasource'] = array(
+      '#type' => 'select',
+      '#title' => t('Data Source'),
+      '#options' => array(
+        'location' => t('Location.module'),
+        'fields' => t('Choose latitude and longitude fields'),
+      //'geocode' => t('Just-in-time geocoding on field named "address"'),
+      ),
+      '#default_value' => $this->options['datasource'],
+      '#multiple' => FALSE,
+    );
+
     $form['clickmode'] = array(
       '#type' => 'radios',
       '#title' => t('Marker click action'),
