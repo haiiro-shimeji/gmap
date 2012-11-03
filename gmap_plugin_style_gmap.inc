@@ -43,6 +43,9 @@ class gmap_plugin_style_gmap extends views_plugin_style {
     $options['highlight_nodearg_arg'] = array('default' => '');
     $options['highlight_nodearg_color'] = array('default' => '#FF0000');
 
+    $options['autoclick_on_nodearg'] = array('default' => 0);
+    $options['autoclick_on_nodearg_arg'] = array('default' => '');
+
     $options['tooltipenabled'] = array('default' => 0);
     $options['tooltipfield'] = array('default' => '');
     
@@ -152,13 +155,17 @@ class gmap_plugin_style_gmap extends views_plugin_style {
       $center_lon = NULL;
       $center_nid = NULL;
       $highlight_nid = NULL;
+      $autoclick_nid = NULL;
 
-      // We search nid argument used to center map
+      // We search nid argument used to center map, autoclick or highlight.
       if ($this->options['center_on_nodearg'] && $nodehandler = $this->view->display_handler->get_handler('argument', $this->options['center_on_nodearg_arg'])) {
         $center_nid = $nodehandler->get_value();
       }
       if ($this->options['highlight_nodearg'] && $nodehandler = $this->view->display_handler->get_handler('argument', $this->options['highlight_nodearg_arg'])) {
         $highlight_nid = $nodehandler->get_value();
+      }
+      if ($this->options['autoclick_on_nodearg'] && $nodehandler = $this->view->display_handler->get_handler('argument', $this->options['autoclick_on_nodearg_arg'])) {
+        $autoclick_nid = $nodehandler->get_value();
       }
 
       foreach ($records as $row_index => $row) {
@@ -222,12 +229,14 @@ class gmap_plugin_style_gmap extends views_plugin_style {
             'markername' => $markername,
             'offset' => $offsets[$markername],
             'text' => $bubbletext,
+            'autoclick' => (!empty($autoclick_nid) && !empty($row_nid) && $autoclick_nid == $row_nid) ? 1 : 0,
             'opts' => array(
               'title' => $tooltip,
               'highlight' => (!empty($highlight_nid) && !empty($row_nid) && $highlight_nid == $row_nid) ? 1 : 0,
               'highlightcolor' => $this->options['highlight_nodearg_color'],
             ),
           );
+
           // RMT mode.
           if ($this->options['enablermt']) {
             $marker['rmt'] = $row->{$rmt_field};
@@ -428,6 +437,22 @@ class gmap_plugin_style_gmap extends views_plugin_style {
       '#default_value' => $this->options['highlight_nodearg_color'],
       '#process' => array('ctools_dependent_process'),
       '#dependency' => array('edit-style-options-highlight-nodearg' => array(TRUE)),
+    );
+
+    $form['autoclick_on_nodearg'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Autoclick on node argument'),
+      '#default_value' => $this->options['autoclick_on_nodearg'],
+      '#description' => ($this->view->base_table == 'node') ? t('Note: The view must contain an argument whose value is a node ID.') : t('Note: The view must contain an argument whose value is a node ID.') . '<br />' . t("The view must contain 'Node: nid' as one of its fields because the view type is not 'Node'."),
+    );
+    $form['autoclick_on_nodearg_arg'] = array(
+      '#title' => t('Argument'),
+      '#description' => empty($argument_options) ? t("The value of the selected argument must be a number that matches a node ID.  Use the 'Global: Null' argument if you don't want to also restrict results to that node ID.  You must have added arguments to the view to use this option.") : t("The selected argument must be a number that matches a node ID.  Use the 'Global: Null' argument if you don't want to also restrict results to that node ID."),
+      '#type' => 'select',
+      '#options' => $argument_options,
+      '#default_value' => $this->options['autoclick_on_nodearg_arg'],
+      '#process' => array('ctools_dependent_process'),
+      '#dependency' => array('edit-style-options-autoclick-on-nodearg' => array(TRUE)),
     );
 
     $form['tooltipenabled'] = array(
