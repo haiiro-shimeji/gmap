@@ -38,6 +38,8 @@ class gmap_plugin_style_gmap extends views_plugin_style {
 
     $options['center_on_nodearg'] = array('default' => 0);
     $options['center_on_nodearg_arg'] = array('default' => '');
+    
+    $options['center_on_proximityarg'] = array('default' => 0);
 
     $options['highlight_nodearg'] = array('default' => 0);
     $options['highlight_nodearg_arg'] = array('default' => '');
@@ -166,6 +168,14 @@ class gmap_plugin_style_gmap extends views_plugin_style {
       // We search nid argument used to center map, autoclick or highlight.
       if ($this->options['center_on_nodearg'] && $nodehandler = $this->view->display_handler->get_handler('argument', $this->options['center_on_nodearg_arg'])) {
         $center_nid = $nodehandler->get_value();
+      }
+      // Use the distance contextual filter argument to center the map
+      if ($this->options['center_on_proximityarg'] && $this->options['datasource'] == 'location' && module_exists('location')) {
+        // Just grab this straight from the view
+        $distance_contextual_filter = $this->view->display_handler->get_handler('argument', 'distance');
+
+        $center_lat = $distance_contextual_filter->value['latitude'];
+        $center_lon = $distance_contextual_filter->value['longitude'];
       }
       if ($this->options['highlight_nodearg'] && $nodehandler = $this->view->display_handler->get_handler('argument', $this->options['highlight_nodearg_arg'])) {
         $highlight_nid = $nodehandler->get_value();
@@ -450,6 +460,15 @@ class gmap_plugin_style_gmap extends views_plugin_style {
       '#process' => array('ctools_dependent_process'),
       '#dependency' => array('edit-style-options-center-on-nodearg' => array(TRUE)),
     );
+    
+    if (module_exists('location')) {
+      $form['center_on_proximityarg'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Center on proximity contextual filter'),
+        '#default_value' => $this->options['center_on_proximityarg'],
+        '#description' => t('Note: The view must contain a "Location: Distance / Proximity" contextual filter'),
+      );
+    }
 
     $form['highlight_nodearg'] = array(
       '#type' => 'checkbox',
