@@ -620,7 +620,7 @@ function gmap_admin_settings_validate($form, &$form_state) {
 function gmap_admin_settings_markerclusterer_submit($form, &$form_state) {
   /**
   * Convert UI JSON text input into nested data structure.
-  * In that way, it is ready to be stored as serialized data and to be output 
+  * In that way, it is ready to be stored as serialized data and to be output
   * with drupal_add_js().
   */
   // for convenience: empty input means empty array
@@ -634,7 +634,7 @@ function gmap_admin_settings_markerclusterer_submit($form, &$form_state) {
 
   // MarkerClusterer checks maxZoom to be a JS variable of type "number", so just do a type cast
   $form_state['values']['gmap_markermanager']['markerclusterer']['maxZoom'] = (int) $form_state['values']['gmap_markermanager']['markerclusterer']['maxZoom'];
-  
+
   // MarkerClusterer checks gridSize to be a JS variable of type "number", so just do a type cast
   $form_state['values']['gmap_markermanager']['markerclusterer']['gridSize'] = (int) $form_state['values']['gmap_markermanager']['markerclusterer']['gridSize'];
 }
