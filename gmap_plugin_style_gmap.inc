@@ -96,10 +96,7 @@ class gmap_plugin_style_gmap extends views_plugin_style {
     }
 
     $defaults = gmap_defaults();
-    $lat_field = 'gmap_lat';
-    $lon_field = 'gmap_lon';
 
-<<<<<<< HEAD
     if ($this->options['datasource'] == 'location') {
       $lat_field = 'gmap_lat';
       $lon_field = 'gmap_lon';
@@ -108,14 +105,12 @@ class gmap_plugin_style_gmap extends views_plugin_style {
       $lat_field = 'lat';
       $lon_field = 'lon';
     }
-=======
->>>>>>> parent of 0502e4b... Issue #1153032 by citlacom: Fixed Markers doesn't work in a view with the configuration: choose latitude and longitude fields.
     // Determine fieldname for latitude and longitude fields.
-    if ($this->options['datasource'] == 'fields') {
-      $lat_fied_obj = $this->view->display_handler->get_handler('field', $this->options['latfield']);
+    else if ($this->options['datasource'] == 'fields') {
+      $lat_field_obj = $this->view->display_handler->get_handler('field', $this->options['latfield']);
       $lon_field_obj = $this->view->display_handler->get_handler('field', $this->options['lonfield']);
-      $lat_field = $lat_fied_obj->field_alias;
-      $lon_field = $lon_field_obj->field_alias;
+      $lat_field = $this->options['latfield'];
+      $lon_field = $this->options['lonfield'];
     }
 
     $tooltip_field = '';
@@ -191,7 +186,6 @@ class gmap_plugin_style_gmap extends views_plugin_style {
 
       foreach ($records as $row_index => $row) {
         $this->view->row_index = $row_index;
-<<<<<<< HEAD
 
         if ($this->options['datasource'] == 'location') {
           $lat = (float)$row->{$lat_field};
@@ -215,10 +209,6 @@ class gmap_plugin_style_gmap extends views_plugin_style {
             $lon = (float)$custom_field_lon['value'];
           }
         }
-=======
-        $lat = (float)$row->{$lat_field};
-        $lon = (float)$row->{$lon_field};
->>>>>>> parent of 0502e4b... Issue #1153032 by citlacom: Fixed Markers doesn't work in a view with the configuration: choose latitude and longitude fields.
 
         // $row->nid is present in node views, views without node as the base table must include the nid field,
         // which will be in $row->node_nid if present.
@@ -359,6 +349,7 @@ class gmap_plugin_style_gmap extends views_plugin_style {
       '#title' => t('Data Source'),
       '#options' => array(
         'location' => t('Location.module'),
+        'geofield' => t('Geofield.module'),
         'fields' => t('Choose latitude and longitude fields'),
       //'geocode' => t('Just-in-time geocoding on field named "address"'),
       ),
@@ -384,6 +375,16 @@ class gmap_plugin_style_gmap extends views_plugin_style {
       '#default_value' => $this->options['lonfield'],
       '#process' => array('ctools_dependent_process'),
       '#dependency' => array('edit-style-options-datasource' => array('fields')),
+    );
+
+    $form['geofield'] = array(
+      '#title' => t('Geofield field'),
+      '#description' => t('Select the Geofield source field.'),
+      '#type' => 'select',
+      '#options' => $field_options,
+      '#default_value' => $this->options['geofield'],
+      '#process' => array('ctools_dependent_process'),
+      '#dependency' => array('edit-style-options-datasource' => array('geofield')),
     );
 
     $form['markers'] = array(
