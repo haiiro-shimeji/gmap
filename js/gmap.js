@@ -599,5 +599,15 @@ Drupal.behaviors.GMap = {
   }
     jQuery('.gmap-gmap:not(.gmap-processed)', context).addClass('gmap-processed').each(function () {Drupal.gmap.setup.call(this)});
     jQuery('.gmap-control:not(.gmap-processed)', context).addClass('gmap-processed').each(function () {Drupal.gmap.setup.call(this)});
+  },
+  detach: function (context, settings) {
+    jQuery('.gmap-processed', context).each(function (element) {
+      //find mapid
+      var id = jQuery(this).attr('id');
+      var mapid = id.split('-', 2);
+
+      //unload map
+      Drupal.gmap.unloadMap(mapid[1]);
+    });
   }
 };
