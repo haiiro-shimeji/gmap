@@ -387,6 +387,7 @@ Drupal.gmap.addHandler('gmap', function (elem) {
           map.setCenter(new google.maps.LatLng(obj.vars.latitude, obj.vars.longitude), obj.vars.zoom);
         };
         jQuery(elem).parents('fieldset.collapsible').children('legend').children('a').click(r);
+        jQuery('.vertical-tab-button', jQuery(elem).parents('.vertical-tabs')).children('a').click(r);
         // Would be nice, but doesn't work.
         //$(elem).parents('fieldset.collapsible').children('.fieldset-wrapper').scroll(r);
       }, 0);
