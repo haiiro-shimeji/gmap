@@ -326,10 +326,26 @@ function _gmap_base_js() {
     'language' => $language->language,
     'sensor' => 'false',
   );
-  $ret[url(gmap_views_protocol() . '://maps.google.com/maps/'.$file, array('query' => $query))] = array(
-    'type' => 'external',
-    'weight' => 2
-  );
+  if ($query['language'] == 'zh-hans') {
+    $query['language'] = 'zh-CN';
+    $ret[url(gmap_views_protocol() . '://ditu.google.cn/maps/'.$file, array('query' => $query))] = array(
+      'type' => 'external',
+      'weight' => 2
+    );
+  }
+  elseif ($query['language'] == 'zh-hant') {
+    $query['language'] = 'zh-TW';
+    $ret[url(gmap_views_protocol() . '://maps.google.com/maps/'.$file, array('query' => $query))] = array(
+      'type' => 'external',
+      'weight' => 2
+    );
+  }
+  else {
+    $ret[url(gmap_views_protocol() . '://maps.google.com/maps/'.$file, array('query' => $query))] = array(
+      'type' => 'external',
+      'weight' => 2
+    );
+  }
 
   $ret[file_create_url('public://js/gmap_markers.js')] = array(
     'type' => 'external',
@@ -381,8 +397,17 @@ drupal_add_js($gmap_path . '/js/poly.js');
     'language' => $language->language,
     'sensor' => 'false',
   );
-  drupal_add_js(url('http://maps.google.com/maps/' . $file, array('query' => $query)));
-
+  if ($query['language'] == 'zh-hans') {
+    $query['language'] = 'zh-CN';
+    drupal_add_js(url('http://ditu.google.cn/maps/' . $file, array('query' => $query)));
+  }
+  elseif ($query['language'] == 'zh-hant') {
+    $query['language'] = 'zh-TW';
+    drupal_add_js(url('http://maps.google.com/maps/' . $file, array('query' => $query)));
+  }
+  else {
+    drupal_add_js(url('http://maps.google.com/maps/' . $file, array('query' => $query)));
+  }
   $gmap_initialized = TRUE;
 }
 
