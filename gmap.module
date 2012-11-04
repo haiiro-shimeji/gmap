@@ -799,7 +799,8 @@ function process_gmap_style($element) {
     '#attributes' => array('class' => array('gmap_style')),
   );
   unset($element['#input']);
-  $element += element_info('fieldset');
+  $element_info = element_info('fieldset');
+  $element = array_merge($element, $element_info);
   return $element;
 }
 
