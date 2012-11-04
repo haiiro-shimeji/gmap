@@ -586,7 +586,7 @@ function gmap_regenerate_markers() {
   $contents .= "Drupal.gmap.iconpath = " . drupal_json_encode(base_path() . variable_get('gmap_markerfiles', drupal_get_path('module', 'gmap') . '/markers')) . ";\n";
   $contents .= "Drupal.gmap.icondata = " . drupal_json_encode(gmap_get_icondata(TRUE)) . ";\n";
 
-  $dir = drupal_realpath("public://js/");
+  $dir = "public://js/";
 
   // Make sure js/ exists in the files folder.
   if (file_prepare_directory($dir, FILE_CREATE_DIRECTORY)) {
