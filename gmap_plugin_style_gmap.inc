@@ -113,18 +113,6 @@ class gmap_plugin_style_gmap extends views_plugin_style {
       $lon_field = $this->options['lonfield'];
     }
 
-    $tooltip_field = '';
-    if ($this->options['tooltipenabled']) {
-      $tooltip_field_obj = $this->view->display_handler->get_handler('field', $this->options['tooltipfield']);
-      $tooltip_field = $tooltip_field_obj->field_alias;
-    }
-    
-    $bubbletext_field_alias = '';
-    if ($this->options['bubbletextenabled']) {
-      $bubbletext_field_obj = $this->view->display_handler->get_handler('field', $this->options['bubbletextfield']);
-      $bubbletext_field_alias = $bubbletext_field_obj->field_alias;
-    }
-
     // Determine fieldname for marker field.
     if ($this->options['markers'] == 'field') {
       $marker_field_obj = $this->view->display_handler->get_handler('field', $this->options['markerfield']);
@@ -251,9 +239,9 @@ class gmap_plugin_style_gmap extends views_plugin_style {
             $offsets[$markername] = 0;
           }
 
-          $tooltip = "";
-          if ($this->options['tooltipenabled'] && !empty($tooltip_field) && !empty($row->{$tooltip_field})) {
-            $tooltip = $row->{$tooltip_field};
+          $tooltip = '';
+          if ($this->options['tooltipenabled'] && !empty($this->rendered_fields[$row_index][$this->options['tooltipfield']])) {
+            $tooltip = $this->rendered_fields[$row_index][$this->options['tooltipfield']];
           }
           
           $bubbletext = NULL;
