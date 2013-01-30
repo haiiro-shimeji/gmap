@@ -260,6 +260,9 @@ class gmap_plugin_style_gmap extends views_plugin_style {
           if ($this->options['bubbletextenabled'] && !empty($bubbletext_field_alias) && !empty($row->{$bubbletext_field_alias})) {
             $bubbletext = $this->rendered_fields[$row_index][$this->options['bubbletextfield']];
           }
+          elseif ($this->options['bubbletextenabled'] && $bubbletext_field_obj->real_field == 'nothing'){
+            $bubbletext = $this->rendered_fields[$row_index][$this->options['bubbletextfield']];
+          }
 
           $marker = array(
             'latitude' => $lat,
