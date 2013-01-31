@@ -131,7 +131,6 @@ function gmap_gmap($op, &$map) {
       }
 
       // add required base js
-      drupal_add_js('http://maps.google.com/maps?file=api&v=2.115&key='.variable_get('googlemap_api_key').'&;hl=en');
       drupal_add_js($path . 'gmap.js');
       drupal_add_js($path . 'icon.js');
       drupal_add_js($path . 'marker.js');
@@ -326,6 +325,9 @@ function _gmap_base_js() {
     'language' => $language->language,
     'sensor' => 'false',
   );
+  if ($key = gmap_get_key()) {
+    $query['key'] = $key;
+  }
   if ($query['language'] == 'zh-hans') {
     $query['language'] = 'zh-CN';
     $ret[url(gmap_views_protocol() . '://ditu.google.cn/maps/'.$file, array('query' => $query))] = array(
@@ -335,13 +337,13 @@ function _gmap_base_js() {
   }
   elseif ($query['language'] == 'zh-hant') {
     $query['language'] = 'zh-TW';
-    $ret[url(gmap_views_protocol() . '://maps.google.com/maps/'.$file, array('query' => $query))] = array(
+    $ret[url(gmap_views_protocol() . '://maps.googleapis.com/maps/'.$file, array('query' => $query))] = array(
       'type' => 'external',
       'weight' => 2
     );
   }
   else {
-    $ret[url(gmap_views_protocol() . '://maps.google.com/maps/'.$file, array('query' => $query))] = array(
+    $ret[url(gmap_views_protocol() . '://maps.googleapis.com/maps/'.$file, array('query' => $query))] = array(
       'type' => 'external',
       'weight' => 2
     );
@@ -1335,7 +1337,7 @@ function gmap_keys_service() {
  * Retrieve the Google Maps key that is in use for the site.
  */
 function gmap_get_key() {
-  $key = variable_get('googlemap_api_key', '');
+  $key = variable_get('gmap_api_key', FALSE);
   if (module_exists('keys_api')) {
     $key = keys_api_get_key('gmap', $_SERVER['HTTP_HOST']);
   }
